@@ -35,14 +35,14 @@ $pageTitle='My Assignments'; $pageSubtitle='Issues assigned to you';
     <?php include '../includes/topbar.php'; ?>
     <div class="page-content">
       <form method="GET" class="filter-bar">
-        <input type="text" name="search" placeholder="🔍 Search..." value="<?= htmlspecialchars($search) ?>" class="bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700" style="flex:1;min-width:200px;">
-        <select name="status" class="bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700">
+        <input type="text" name="search" placeholder="🔍 Search..." value="<?= htmlspecialchars($search) ?>" class="bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700" style="flex:1;min-width:200px;">
+        <select name="status" class="bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700">
           <option value="">All Status</option>
           <?php foreach(['in_progress','resolved','closed'] as $s): ?>
             <option value="<?= $s ?>" <?= $statusFilter===$s?'selected':'' ?>><?= ucwords(str_replace('_',' ',$s)) ?></option>
           <?php endforeach; ?>
         </select>
-        <select name="priority" class="bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700">
+        <select name="priority" class="bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700">
           <option value="">All Priority</option>
           <?php foreach(['low','medium','high','critical'] as $p): ?>
             <option value="<?= $p ?>" <?= $priorityFilter===$p?'selected':'' ?>><?= ucfirst($p) ?></option>

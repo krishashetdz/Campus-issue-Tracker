@@ -80,44 +80,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label class="form-label" for="full_name">Full Name *</label>
         <div class="input-group">
           <span class="input-group-text"><i class="bi bi-person"></i></span>
-          <input type="text" id="full_name" name="full_name" class="form-control bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700" placeholder="John Doe" required value="<?= htmlspecialchars($_POST['full_name'] ?? '') ?>">
+          <input type="text" id="full_name" name="full_name" class="form-control bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700" placeholder="John Doe" required value="<?= htmlspecialchars($_POST['full_name'] ?? '') ?>">
         </div>
       </div>
       <div class="mb-3">
         <label class="form-label" for="reg_email">Email Address *</label>
         <div class="input-group">
           <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-          <input type="email" id="reg_email" name="email" class="form-control bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700" placeholder="you@campus.edu" required value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
+          <input type="email" id="reg_email" name="email" class="form-control bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700" placeholder="you@campus.edu" required value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
         </div>
       </div>
       <div class="row mb-3">
         <div class="col-md-6">
           <label class="form-label" for="role">Role *</label>
-          <select id="role" name="role" class="form-control bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700">
+          <select id="role" name="role" class="form-control bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700">
             <option value="student" <?= ($_POST['role']??'student')==='student'?'selected':'' ?>>Student</option>
             <option value="staff"   <?= ($_POST['role']??'')==='staff'?'selected':'' ?>>Staff</option>
           </select>
         </div>
         <div class="col-md-6">
           <label class="form-label" for="department">Department *</label>
-          <input type="text" id="department" name="department" class="form-control bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700" placeholder="e.g. Computer Science" required value="<?= htmlspecialchars($_POST['department'] ?? '') ?>">
+          <input type="text" id="department" name="department" class="form-control bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700" placeholder="e.g. Computer Science" required value="<?= htmlspecialchars($_POST['department'] ?? '') ?>">
         </div>
       </div>
       <div class="mb-3">
         <label class="form-label" for="phone">Phone Number</label>
         <div class="input-group">
           <span class="input-group-text"><i class="bi bi-phone"></i></span>
-          <input type="tel" id="phone" name="phone" class="form-control bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700" placeholder="9876543210" value="<?= htmlspecialchars($_POST['phone'] ?? '') ?>">
+          <input type="tel" id="phone" name="phone" class="form-control bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700" placeholder="9876543210" value="<?= htmlspecialchars($_POST['phone'] ?? '') ?>">
         </div>
       </div>
       <div class="row mb-4">
         <div class="col-md-6">
           <label class="form-label" for="password">Password *</label>
-          <input type="password" id="password" name="password" class="form-control bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700" placeholder="Min. 6 characters" required>
+          <input type="password" id="password" name="password" class="form-control bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700" placeholder="Min. 6 characters" required>
         </div>
         <div class="col-md-6">
           <label class="form-label" for="confirm_password">Confirm Password *</label>
-          <input type="password" id="confirm_password" name="confirm_password" class="form-control bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700" placeholder="Repeat password" required>
+          <input type="password" id="confirm_password" name="confirm_password" class="form-control bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700" placeholder="Repeat password" required>
         </div>
       </div>
       <button type="submit" class="bg-zinc-100 text-zinc-950 hover:bg-zinc-200 font-sans text-xs font-semibold px-3 py-2 rounded-md transition-colors shadow-none focus:outline-none focus:ring-1 focus:ring-zinc-400 w-full">Create Account</button>

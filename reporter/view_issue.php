@@ -97,12 +97,32 @@ $pageSubtitle = htmlspecialchars($issue['title']);
           <div class="panel fade-in-up">
             <div class="panel-header"><i class="bi bi-images me-2"></i>Uploaded Images (<?= count($images) ?>)</div>
             <div class="panel-body">
-              <div class="img-gallery">
-                <?php foreach($images as $img): ?>
-                  <a href="../uploads/issues/<?= htmlspecialchars($img['image_path']) ?>" target="_blank">
-                    <img src="../uploads/issues/<?= htmlspecialchars($img['image_path']) ?>" alt="Issue image" onerror="this.src='../assets/img/no-img.png'">
+              <div class="mt-3 flex flex-wrap gap-3">
+                <?php 
+                $validImgCount = 0;
+                foreach($images as $img):
+                  $filename = basename($img['image_path']);
+                  $webPath = '';
+                  if (!empty($filename) && file_exists(__DIR__ . '/../uploads/issues/' . $filename)) {
+                    $webPath = '../uploads/issues/' . $filename;
+                  } elseif (!empty($filename) && file_exists(__DIR__ . '/../uploads/' . $filename)) {
+                    $webPath = '../uploads/' . $filename;
+                  } elseif (!empty($img['image_path']) && file_exists(__DIR__ . '/../' . ltrim($img['image_path'], '/'))) {
+                    $webPath = '../' . ltrim($img['image_path'], '/');
+                  }
+                  if ($webPath):
+                    $validImgCount++;
+                ?>
+                  <a href="<?= htmlspecialchars($webPath) ?>" target="_blank" class="block border border-stone-300 rounded-md overflow-hidden hover:opacity-90 transition-opacity">
+                    <img src="<?= htmlspecialchars($webPath) ?>" alt="Attached Image" class="w-32 h-32 object-cover" />
                   </a>
-                <?php endforeach; ?>
+                <?php 
+                  endif;
+                endforeach;
+                if ($validImgCount === 0):
+                ?>
+                  <p class="text-xs text-stone-500 italic">No image preview available</p>
+                <?php endif; ?>
               </div>
             </div>
           </div>

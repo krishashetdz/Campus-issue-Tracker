@@ -48,8 +48,8 @@ $pageTitle='Users Management'; $pageSubtitle='View and manage registered users';
       <?php if($err): ?><div class="alert-banner alert-danger"><i class="bi bi-exclamation-circle me-2"></i><?= htmlspecialchars($err) ?></div><?php endif; ?>
 
       <form method="GET" class="filter-bar">
-        <input type="text" name="search" placeholder="🔍 Search name, email, department..." value="<?= htmlspecialchars($search) ?>" class="bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700" style="flex:1;min-width:200px;">
-        <select name="role" class="bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700">
+        <input type="text" name="search" placeholder="🔍 Search name, email, department..." value="<?= htmlspecialchars($search) ?>" class="bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700" style="flex:1;min-width:200px;">
+        <select name="role" class="bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700">
           <option value="">All Roles</option>
           <?php foreach(['student','staff','admin','maintenance'] as $r): ?>
             <option value="<?= $r ?>" <?= $roleFilter===$r?'selected':'' ?>><?= ucfirst($r) ?></option>

@@ -107,10 +107,38 @@ $pageTitle = 'Issue #'.$id.' – Admin View'; $pageSubtitle = htmlspecialchars($
           </div>
 
           <!-- Images -->
-          <?php if($images): ?>
+          <?php if(!empty($images)): ?>
           <div class="panel">
             <div class="panel-header"><i class="bi bi-images me-2"></i>Images (<?= count($images) ?>)</div>
-            <div class="panel-body"><div class="img-gallery"><?php foreach($images as $img): ?><a href="../uploads/issues/<?= htmlspecialchars($img['image_path']) ?>" target="_blank"><img src="../uploads/issues/<?= htmlspecialchars($img['image_path']) ?>" alt="Issue image" onerror="this.style.display='none'"></a><?php endforeach; ?></div></div>
+            <div class="panel-body">
+              <div class="mt-3 flex flex-wrap gap-3">
+                <?php 
+                $validImgCount = 0;
+                foreach($images as $img):
+                  $filename = basename($img['image_path']);
+                  $webPath = '';
+                  if (!empty($filename) && file_exists(__DIR__ . '/../uploads/issues/' . $filename)) {
+                    $webPath = '../uploads/issues/' . $filename;
+                  } elseif (!empty($filename) && file_exists(__DIR__ . '/../uploads/' . $filename)) {
+                    $webPath = '../uploads/' . $filename;
+                  } elseif (!empty($img['image_path']) && file_exists(__DIR__ . '/../' . ltrim($img['image_path'], '/'))) {
+                    $webPath = '../' . ltrim($img['image_path'], '/');
+                  }
+                  if ($webPath):
+                    $validImgCount++;
+                ?>
+                  <a href="<?= htmlspecialchars($webPath) ?>" target="_blank" class="block border border-stone-300 rounded-md overflow-hidden hover:opacity-90 transition-opacity">
+                    <img src="<?= htmlspecialchars($webPath) ?>" alt="Attached Image" class="w-32 h-32 object-cover" />
+                  </a>
+                <?php 
+                  endif;
+                endforeach;
+                if ($validImgCount === 0):
+                ?>
+                  <p class="text-xs text-stone-500 italic">No image preview available</p>
+                <?php endif; ?>
+              </div>
+            </div>
           </div>
           <?php endif; ?>
 
@@ -146,7 +174,7 @@ $pageTitle = 'Issue #'.$id.' – Admin View'; $pageSubtitle = htmlspecialchars($
                 <input type="hidden" name="action" value="assign">
                 <div class="field-group">
                   <label>Assign to Staff</label>
-                  <select name="assigned_to" required class="bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 w-full">
+                  <select name="assigned_to" required class="bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700 w-full">
                     <option value="">-- Select Staff --</option>
                     <?php foreach($maintStaff as $ms): ?>
                       <option value="<?= $ms['user_id'] ?>" <?= $issue['assigned_to']==$ms['user_id']?'selected':'' ?>>
@@ -157,7 +185,7 @@ $pageTitle = 'Issue #'.$id.' – Admin View'; $pageSubtitle = htmlspecialchars($
                 </div>
                 <div class="field-group">
                   <label>Remarks (optional)</label>
-                  <textarea name="remarks" rows="2" placeholder="Instructions for staff..." class="bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 w-full"></textarea>
+                  <textarea name="remarks" rows="2" placeholder="Instructions for staff..." class="bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700 w-full"></textarea>
                 </div>
                 <button type="submit" class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 font-sans text-xs font-semibold px-3 py-1.5 rounded-md transition-colors shadow-none focus:outline-none focus:ring-1 focus:ring-emerald-500 w-full justify-center flex items-center" style="padding:10px;"><i class="bi bi-person-plus me-2"></i>Assign & Set In Progress</button>
               </form>
@@ -173,7 +201,7 @@ $pageTitle = 'Issue #'.$id.' – Admin View'; $pageSubtitle = htmlspecialchars($
                 <input type="hidden" name="action" value="status">
                 <div class="field-group">
                   <label>New Status</label>
-                  <select name="new_status" class="bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 w-full">
+                  <select name="new_status" class="bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700 w-full">
                     <?php foreach(['pending','in_progress','resolved','closed','rejected'] as $s): ?>
                       <option value="<?= $s ?>" <?= $issue['status']===$s?'selected':'' ?>><?= ucwords(str_replace('_',' ',$s)) ?></option>
                     <?php endforeach; ?>
@@ -181,7 +209,7 @@ $pageTitle = 'Issue #'.$id.' – Admin View'; $pageSubtitle = htmlspecialchars($
                 </div>
                 <div class="field-group">
                   <label>Remark / Reason *</label>
-                  <textarea name="remarks" rows="2" placeholder="Reason for status change..." required class="bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 w-full"></textarea>
+                  <textarea name="remarks" rows="2" placeholder="Reason for status change..." required class="bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700 w-full"></textarea>
                 </div>
                 <button type="submit" class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 font-sans text-xs font-semibold px-3 py-1.5 rounded-md transition-colors shadow-none focus:outline-none focus:ring-1 focus:ring-emerald-500 w-full justify-center flex items-center" style="padding:10px;"><i class="bi bi-check-circle me-2"></i>Update Status</button>
               </form>

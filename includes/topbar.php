@@ -65,7 +65,7 @@ $notifs=getNotifications($pdo,$u['id'],5);
     <form method="GET" action="<?=$searchUrl?>">
       <div class="search-input-row">
         <i class="bi bi-search"></i>
-        <input type="text" name="search" id="searchInput" placeholder="Search issues by title, location, or reporter..." autocomplete="off" class="bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700">
+        <input type="text" name="search" id="searchInput" placeholder="Search issues by title, location, or reporter..." autocomplete="off" class="bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700">
         <kbd onclick="closeSearch()" style="cursor:pointer;background:rgba(255,216,190,.1);border:1px solid var(--peach-dimmer);border-radius:4px;padding:2px 6px;font-size:.63rem;color:var(--peach-dim);">Esc</kbd>
       </div>
     </form>
