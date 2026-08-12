@@ -47,14 +47,11 @@ $pageTitle='Reports & Analytics'; $pageSubtitle='Issue statistics and system ove
 
       <!-- Summary Stats -->
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:22px;">
-        <div class="stat-card primary"><div class="stat-icon"><i class="bi bi-card-list"></i></div><div class="stat-value"><?= $totalIssues ?></div><div class="stat-label">Total Issues</div></div>
-        <div class="stat-card success"><div class="stat-icon"><i class="bi bi-check-circle"></i></div><div class="stat-value"><?= $resolvedIssues ?></div><div class="stat-label">Resolved</div></div>
-        <div class="stat-card warning"><div class="stat-icon"><i class="bi bi-clock"></i></div><div class="stat-value"><?= $pendingIssues ?></div><div class="stat-label">Pending</div></div>
-        <div class="stat-card info"><div class="stat-icon"><i class="bi bi-people"></i></div><div class="stat-value"><?= $totalUsers ?></div><div class="stat-label">Active Users</div></div>
-        <div class="stat-card" style="background:var(--bg-card);border:1px solid var(--border-color);">
-          <div class="stat-icon" style="background:rgba(0,212,255,0.2);color:var(--primary-light);"><i class="bi bi-graph-up-arrow"></i></div>
-          <div class="stat-value"><?= $resolutionRate ?>%</div><div class="stat-label">Resolution Rate</div>
-        </div>
+        <div class="stat-card"><div class="stat-icon"><i class="bi bi-card-list"></i></div><div class="stat-value"><?= $totalIssues ?></div><div class="stat-label">Total Issues</div></div>
+        <div class="stat-card"><div class="stat-icon" style="color:#34d399;border-color:rgba(16,185,129,.2);background:rgba(16,185,129,.1);"><i class="bi bi-check-circle"></i></div><div class="stat-value"><?= $resolvedIssues ?></div><div class="stat-label">Resolved</div></div>
+        <div class="stat-card"><div class="stat-icon" style="color:#fbbf24;border-color:rgba(245,158,11,.2);background:rgba(245,158,11,.1);"><i class="bi bi-clock"></i></div><div class="stat-value"><?= $pendingIssues ?></div><div class="stat-label">Pending</div></div>
+        <div class="stat-card"><div class="stat-icon" style="color:#60a5fa;border-color:rgba(59,130,246,.2);background:rgba(59,130,246,.1);"><i class="bi bi-people"></i></div><div class="stat-value"><?= $totalUsers ?></div><div class="stat-label">Active Users</div></div>
+        <div class="stat-card"><div class="stat-icon" style="color:#38bdf8;border-color:rgba(56,189,248,.2);background:rgba(56,189,248,.1);"><i class="bi bi-graph-up-arrow"></i></div><div class="stat-value"><?= $resolutionRate ?>%</div><div class="stat-label">Resolution Rate</div></div>
       </div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">

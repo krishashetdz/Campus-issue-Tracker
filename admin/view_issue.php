@@ -116,22 +116,23 @@ $pageTitle = 'Issue #'.$id.' – Admin View'; $pageSubtitle = htmlspecialchars($
                 $validImgCount = 0;
                 foreach($images as $img):
                   $filename = basename($img['image_path']);
+                  if (empty($filename)) continue;
                   $webPath = '';
-                  if (!empty($filename) && file_exists(__DIR__ . '/../uploads/issues/' . $filename)) {
-                    $webPath = '../uploads/issues/' . $filename;
-                  } elseif (!empty($filename) && file_exists(__DIR__ . '/../uploads/' . $filename)) {
+                  if (file_exists(__DIR__ . '/../uploads/' . $filename)) {
                     $webPath = '../uploads/' . $filename;
+                  } elseif (file_exists(__DIR__ . '/../uploads/issues/' . $filename)) {
+                    $webPath = '../uploads/issues/' . $filename;
                   } elseif (!empty($img['image_path']) && file_exists(__DIR__ . '/../' . ltrim($img['image_path'], '/'))) {
                     $webPath = '../' . ltrim($img['image_path'], '/');
+                  } else {
+                    $webPath = '../uploads/issues/' . $filename;
                   }
-                  if ($webPath):
-                    $validImgCount++;
+                  $validImgCount++;
                 ?>
                   <a href="<?= htmlspecialchars($webPath) ?>" target="_blank" class="block border border-stone-300 rounded-md overflow-hidden hover:opacity-90 transition-opacity">
-                    <img src="<?= htmlspecialchars($webPath) ?>" alt="Attached Image" class="w-32 h-32 object-cover" />
+                    <img src="<?= htmlspecialchars($webPath) ?>" alt="Attached Image" class="w-32 h-32 object-cover" onerror="if(this.src.indexOf('uploads/issues/')===-1){this.src='../uploads/issues/<?= htmlspecialchars($filename) ?>';}else{this.src='../uploads/<?= htmlspecialchars($filename) ?>';}" />
                   </a>
                 <?php 
-                  endif;
                 endforeach;
                 if ($validImgCount === 0):
                 ?>

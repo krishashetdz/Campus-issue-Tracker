@@ -20,6 +20,12 @@ $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
 $appSubdir = (strpos($scriptDir, '/fixmycampus') !== false) ? '/fixmycampus/' : '/';
 $detectedBaseUrl = (isset($_SERVER['HTTP_HOST']) ? ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $appSubdir) : 'http://localhost/fixmycampus/');
 
+if (!file_exists(__DIR__ . '/../uploads/')) {
+    @mkdir(__DIR__ . '/../uploads/', 0777, true);
+}
+if (!file_exists(__DIR__ . '/../uploads/issues/')) {
+    @mkdir(__DIR__ . '/../uploads/issues/', 0777, true);
+}
 if (!defined('BASE_URL')) define('BASE_URL', getenv('BASE_URL') ?: $detectedBaseUrl);
 if (!defined('UPLOAD_DIR')) define('UPLOAD_DIR', __DIR__ . '/../uploads/issues/');
 if (!defined('UPLOAD_URL')) define('UPLOAD_URL', BASE_URL . 'uploads/issues/');

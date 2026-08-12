@@ -18,6 +18,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     $stmt->execute([$title,$description,$category_id,$location,$priority,$u['id']]);
     $issue_id=$pdo->lastInsertId();
     if(!empty($_FILES['images']['name'][0])){
+      if(!file_exists(UPLOAD_DIR)){ @mkdir(UPLOAD_DIR, 0777, true); }
       $allowed=['image/jpeg','image/png','image/jpg','image/webp'];
       foreach($_FILES['images']['tmp_name'] as $idx=>$tmp){
         if($_FILES['images']['error'][$idx]!==UPLOAD_ERR_OK)continue;

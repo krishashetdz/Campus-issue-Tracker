@@ -28,7 +28,7 @@ $error_get=htmlspecialchars($_GET['error']??'');
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#dad0be;--burg:#4A0E17;--burg2:#7B1E2B;--cream:#EAE0D3;--cream2:#F5F0EB;--r:24px;--g:12px}
+:root{--bg:#bfaf9c;--burg:#4A0E17;--burg2:#7B1E2B;--cream:#EAE0D3;--cream2:#F5F0EB;--r:24px;--g:12px}
 html,body{min-height:100vh;background:var(--bg);font-family:'DM Sans',sans-serif;-webkit-font-smoothing:antialiased}
 .nav{display:flex;align-items:center;justify-content:space-between;background:var(--burg);border-radius:var(--r);padding:13px 22px;margin:12px 12px 0;gap:12px}
 .nav-brand{font-family:'Playfair Display',serif;font-size:1.05rem;color:#fff;letter-spacing:-.01em;text-decoration:none}

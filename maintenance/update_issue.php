@@ -73,6 +73,7 @@ $pageTitle='Update Issue #'.$id; $pageSubtitle=htmlspecialchars($issue['title'])
               <?php if($issue['admin_remark']): ?><div style="background:var(--bg-body);border:1px solid var(--border-color);border-radius:var(--radius);padding:12px;"><div style="font-size:0.72rem;font-weight:700;color:var(--text-primary);margin-bottom:5px;"><i class="bi bi-chat-left-quote me-1"></i>Admin Instruction</div><div style="font-size:0.85rem;color:var(--text-muted);"><?= nl2br(htmlspecialchars($issue['admin_remark'])) ?></div></div><?php endif; ?>
             </div>
           </div>
+          <!-- Images -->
           <?php if(!empty($images)): ?>
           <div class="panel">
             <div class="panel-header"><i class="bi bi-images me-2"></i>Images (<?= count($images) ?>)</div>
@@ -82,22 +83,23 @@ $pageTitle='Update Issue #'.$id; $pageSubtitle=htmlspecialchars($issue['title'])
                 $validImgCount = 0;
                 foreach($images as $img):
                   $filename = basename($img['image_path']);
+                  if (empty($filename)) continue;
                   $webPath = '';
-                  if (!empty($filename) && file_exists(__DIR__ . '/../uploads/issues/' . $filename)) {
-                    $webPath = '../uploads/issues/' . $filename;
-                  } elseif (!empty($filename) && file_exists(__DIR__ . '/../uploads/' . $filename)) {
+                  if (file_exists(__DIR__ . '/../uploads/' . $filename)) {
                     $webPath = '../uploads/' . $filename;
+                  } elseif (file_exists(__DIR__ . '/../uploads/issues/' . $filename)) {
+                    $webPath = '../uploads/issues/' . $filename;
                   } elseif (!empty($img['image_path']) && file_exists(__DIR__ . '/../' . ltrim($img['image_path'], '/'))) {
                     $webPath = '../' . ltrim($img['image_path'], '/');
+                  } else {
+                    $webPath = '../uploads/issues/' . $filename;
                   }
-                  if ($webPath):
-                    $validImgCount++;
+                  $validImgCount++;
                 ?>
                   <a href="<?= htmlspecialchars($webPath) ?>" target="_blank" class="block border border-stone-300 rounded-md overflow-hidden hover:opacity-90 transition-opacity">
-                    <img src="<?= htmlspecialchars($webPath) ?>" alt="Attached Image" class="w-32 h-32 object-cover" />
+                    <img src="<?= htmlspecialchars($webPath) ?>" alt="Attached Image" class="w-32 h-32 object-cover" onerror="if(this.src.indexOf('uploads/issues/')===-1){this.src='../uploads/issues/<?= htmlspecialchars($filename) ?>';}else{this.src='../uploads/<?= htmlspecialchars($filename) ?>';}" />
                   </a>
                 <?php 
-                  endif;
                 endforeach;
                 if ($validImgCount === 0):
                 ?>
