@@ -82,22 +82,21 @@ $pageTitle='Update Issue #'.$id; $pageSubtitle=htmlspecialchars($issue['title'])
                 <?php 
                 $validImgCount = 0;
                 foreach($images as $img):
-                  $filename = basename($img['image_path']);
-                  if (empty($filename)) continue;
-                  $webPath = '';
-                  if (file_exists(__DIR__ . '/../uploads/' . $filename)) {
-                    $webPath = '../uploads/' . $filename;
-                  } elseif (file_exists(__DIR__ . '/../uploads/issues/' . $filename)) {
-                    $webPath = '../uploads/issues/' . $filename;
-                  } elseif (!empty($img['image_path']) && file_exists(__DIR__ . '/../' . ltrim($img['image_path'], '/'))) {
-                    $webPath = '../' . ltrim($img['image_path'], '/');
+                  $raw_path = trim($img['image_path'] ?? '');
+                  if (empty($raw_path)) continue;
+                  if (filter_var($raw_path, FILTER_VALIDATE_URL) || strpos($raw_path, 'http://') === 0 || strpos($raw_path, 'https://') === 0) {
+                      $webPath = $raw_path;
+                  } elseif (strpos($raw_path, '../') === 0) {
+                      $webPath = $raw_path;
+                  } elseif (strpos($raw_path, 'uploads/') === 0) {
+                      $webPath = '../' . $raw_path;
                   } else {
-                    $webPath = '../uploads/issues/' . $filename;
+                      $webPath = '../uploads/issues/' . ltrim($raw_path, '/');
                   }
                   $validImgCount++;
                 ?>
                   <a href="<?= htmlspecialchars($webPath) ?>" target="_blank" class="block border border-stone-300 rounded-md overflow-hidden hover:opacity-90 transition-opacity">
-                    <img src="<?= htmlspecialchars($webPath) ?>" alt="Attached Image" class="w-32 h-32 object-cover" onerror="if(this.src.indexOf('uploads/issues/')===-1){this.src='../uploads/issues/<?= htmlspecialchars($filename) ?>';}else{this.src='../uploads/<?= htmlspecialchars($filename) ?>';}" />
+                    <img src="<?= htmlspecialchars($webPath) ?>" alt="Issue Evidence" class="w-32 h-32 object-cover" onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=Image+Not+Found';" />
                   </a>
                 <?php 
                 endforeach;

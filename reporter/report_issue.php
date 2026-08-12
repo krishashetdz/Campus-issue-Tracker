@@ -24,9 +24,27 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         if($_FILES['images']['error'][$idx]!==UPLOAD_ERR_OK)continue;
         $mime=mime_content_type($tmp);if(!in_array($mime,$allowed))continue;
         if($_FILES['images']['size'][$idx]>MAX_FILE_SIZE)continue;
-        $ext=pathinfo($_FILES['images']['name'][$idx],PATHINFO_EXTENSION);
-        $newName='issue_'.$issue_id.'_'.uniqid().'.'.strtolower($ext);
-        if(move_uploaded_file($tmp,UPLOAD_DIR.$newName)){
+        
+        $cloudinaryUrl = uploadToCloudinary($tmp);
+        if ($cloudinaryUrl) {
+          $pdo->prepare("INSERT INTO issue_images (issue_id,image_path) VALUES (?,?)")->execute([$issue_id,$cloudinaryUrl]);
+        } else {
+          $ext=pathinfo($_FILES['images']['name'][$idx],PATHINFO_EXTENSION);
+          $newName='issue_'.$issue_id.'_'.uniqid().'.'.strtolower($ext);
+          if(move_uploaded_file($tmp,UPLOAD_DIR.$newName)){
+            $pdo->prepare("INSERT INTO issue_images (issue_id,image_path) VALUES (?,?)")->execute([$issue_id,$newName]);
+          }
+        }
+      }
+    } elseif (!empty($_FILES['image']['tmp_name']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+      $tmp = $_FILES['image']['tmp_name'];
+      $cloudinaryUrl = uploadToCloudinary($tmp);
+      if ($cloudinaryUrl) {
+        $pdo->prepare("INSERT INTO issue_images (issue_id,image_path) VALUES (?,?)")->execute([$issue_id,$cloudinaryUrl]);
+      } else {
+        $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+        $newName = 'issue_' . $issue_id . '_' . uniqid() . '.' . strtolower($ext);
+        if (move_uploaded_file($tmp, UPLOAD_DIR . $newName)) {
           $pdo->prepare("INSERT INTO issue_images (issue_id,image_path) VALUES (?,?)")->execute([$issue_id,$newName]);
         }
       }
