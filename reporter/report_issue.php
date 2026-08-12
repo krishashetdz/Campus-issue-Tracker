@@ -43,6 +43,7 @@ $pageTitle='Report an Issue';$pageSubtitle='Submit a campus problem for resoluti
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Report Issue – FixMyCampus</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
@@ -59,9 +60,9 @@ $pageTitle='Report an Issue';$pageSubtitle='Submit a campus problem for resoluti
             <div class="panel">
               <div class="panel-header"><i class="bi bi-pencil-square me-2"></i>Issue Details</div>
               <div class="panel-body">
-                <div class="field-group"><label class="form-label" for="title">Issue Title *</label><input type="text" id="title" name="title" class="form-control" placeholder="e.g. Broken light in Lab 3" maxlength="200" required value="<?=htmlspecialchars($_POST['title']??'')?>"></div>
-                <div class="field-group"><label class="form-label" for="description">Description *</label><textarea id="description" name="description" class="form-control" rows="5" placeholder="Describe the issue in detail — what's wrong, how long it has been happening, and its impact..." required><?=htmlspecialchars($_POST['description']??'')?></textarea><div style="font-size:.7rem;color:var(--text-dim);margin-top:4px;">Be as descriptive as possible for faster resolution.</div></div>
-                <div class="field-group" style="margin-bottom:0"><label class="form-label" for="location">Campus Location *</label><input type="text" id="location" name="location" class="form-control" placeholder="e.g. Block A – Computer Lab 3, 2nd Floor" required value="<?=htmlspecialchars($_POST['location']??'')?>"></div>
+                <div class="field-group"><label class="form-label" for="title">Issue Title *</label><input type="text" id="title" name="title" class="form-control bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700" placeholder="e.g. Broken light in Lab 3" maxlength="200" required value="<?=htmlspecialchars($_POST['title']??'')?>"></div>
+                <div class="field-group"><label class="form-label" for="description">Description *</label><textarea id="description" name="description" class="form-control bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700" rows="5" placeholder="Describe the issue in detail — what's wrong, how long it has been happening, and its impact..." required><?=htmlspecialchars($_POST['description']??'')?></textarea><div style="font-size:.7rem;color:var(--text-dim);margin-top:4px;">Be as descriptive as possible for faster resolution.</div></div>
+                <div class="field-group" style="margin-bottom:0"><label class="form-label" for="location">Campus Location *</label><input type="text" id="location" name="location" class="form-control bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700" placeholder="e.g. Block A – Computer Lab 3, 2nd Floor" required value="<?=htmlspecialchars($_POST['location']??'')?>"></div>
               </div>
             </div>
             <div class="panel">
@@ -82,13 +83,13 @@ $pageTitle='Report an Issue';$pageSubtitle='Submit a campus problem for resoluti
               <div class="panel-header"><i class="bi bi-sliders me-2"></i>Classification</div>
               <div class="panel-body">
                 <div class="field-group"><label class="form-label" for="category_id">Category *</label>
-                  <select id="category_id" name="category_id" class="form-control" required>
+                  <select id="category_id" name="category_id" class="form-control bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700" required>
                     <option value="">-- Select Category --</option>
                     <?php foreach($categories as $cat):?><option value="<?=$cat['category_id']?>"<?=($_POST['category_id']??'')==$cat['category_id']?' selected':''?>><?=htmlspecialchars($cat['category_name'])?></option><?php endforeach;?>
                   </select>
                 </div>
                 <div class="field-group" style="margin-bottom:0"><label class="form-label" for="priority">Priority *</label>
-                  <select id="priority" name="priority" class="form-control">
+                  <select id="priority" name="priority" class="form-control bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700">
                     <option value="low"<?=($_POST['priority']??'medium')==='low'?' selected':''?>>Low — Minor inconvenience</option>
                     <option value="medium"<?=($_POST['priority']??'medium')==='medium'?' selected':''?>>Medium — Needs attention</option>
                     <option value="high"<?=($_POST['priority']??'medium')==='high'?' selected':''?>>High — Affects operations</option>
@@ -108,7 +109,7 @@ $pageTitle='Report an Issue';$pageSubtitle='Submit a campus problem for resoluti
                 </div>
               </div>
             </div>
-            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:10px;"><i class="bi bi-send me-2"></i>Submit Issue Report</button>
+            <button type="submit" class="bg-zinc-100 text-zinc-950 hover:bg-zinc-200 font-sans text-xs font-semibold px-3 py-1.5 rounded-md transition-colors shadow-none focus:outline-none focus:ring-1 focus:ring-zinc-400 w-full justify-center flex items-center" style="padding:10px;"><i class="bi bi-send me-2"></i>Submit Issue Report</button>
             <a href="dashboard.php" style="text-align:center;font-size:.75rem;color:var(--text-dim);">Back to Dashboard</a>
           </div>
         </div>

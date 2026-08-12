@@ -23,7 +23,7 @@ $statusData = $pdo->query("SELECT status, COUNT(*) AS cnt FROM issues GROUP BY s
 $priData = $pdo->query("SELECT priority, COUNT(*) AS cnt FROM issues GROUP BY priority ORDER BY FIELD(priority,'critical','high','medium','low')")->fetchAll();
 
 // Monthly issues (last 6 months)
-$monthlyData = $pdo->query("SELECT DATE_FORMAT(created_at,'%b %Y') AS month, COUNT(*) AS cnt FROM issues WHERE created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH) GROUP BY month ORDER BY created_at ASC")->fetchAll();
+$monthlyData = $pdo->query("SELECT DATE_FORMAT(created_at,'%b %Y') AS month, COUNT(*) AS cnt FROM issues WHERE created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH) GROUP BY month ORDER BY MIN(created_at) ASC")->fetchAll();
 
 // Top reporters
 $topReporters = $pdo->query("SELECT u.full_name, u.role, COUNT(i.issue_id) AS cnt FROM users u LEFT JOIN issues i ON i.reported_by=u.user_id GROUP BY u.user_id ORDER BY cnt DESC LIMIT 5")->fetchAll();

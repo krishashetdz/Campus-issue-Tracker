@@ -26,6 +26,7 @@ $pageTitle='My Assignments'; $pageSubtitle='Issues assigned to you';
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>My Assignments – FixMyCampus</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="../assets/css/style.css"></head>
 <body>
 <div class="app-wrapper">
@@ -34,20 +35,20 @@ $pageTitle='My Assignments'; $pageSubtitle='Issues assigned to you';
     <?php include '../includes/topbar.php'; ?>
     <div class="page-content">
       <form method="GET" class="filter-bar">
-        <input type="text" name="search" placeholder="🔍 Search..." value="<?= htmlspecialchars($search) ?>" style="flex:1;min-width:200px;">
-        <select name="status">
+        <input type="text" name="search" placeholder="🔍 Search..." value="<?= htmlspecialchars($search) ?>" class="bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700" style="flex:1;min-width:200px;">
+        <select name="status" class="bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700">
           <option value="">All Status</option>
           <?php foreach(['in_progress','resolved','closed'] as $s): ?>
             <option value="<?= $s ?>" <?= $statusFilter===$s?'selected':'' ?>><?= ucwords(str_replace('_',' ',$s)) ?></option>
           <?php endforeach; ?>
         </select>
-        <select name="priority">
+        <select name="priority" class="bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700">
           <option value="">All Priority</option>
           <?php foreach(['low','medium','high','critical'] as $p): ?>
             <option value="<?= $p ?>" <?= $priorityFilter===$p?'selected':'' ?>><?= ucfirst($p) ?></option>
           <?php endforeach; ?>
         </select>
-        <button type="submit" class="btn-glow" style="padding:8px 18px;">Filter</button>
+        <button type="submit" class="bg-zinc-800 text-zinc-300 border border-zinc-700/60 hover:bg-zinc-700/80 hover:text-zinc-100 font-sans text-xs font-semibold px-3 py-1.5 rounded-md transition-colors shadow-none focus:outline-none focus:ring-1 focus:ring-zinc-600">Filter</button>
         <a href="my_assignments.php" style="color:var(--text-muted);font-size:0.85rem;text-decoration:none;align-self:center;">Clear</a>
       </form>
 

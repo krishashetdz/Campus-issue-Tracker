@@ -18,6 +18,7 @@ $pageTitle='All Issues';$pageSubtitle='Manage and assign campus issues';
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>All Issues – FixMyCampus Admin</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
@@ -28,16 +29,16 @@ $pageTitle='All Issues';$pageSubtitle='Manage and assign campus issues';
     <div class="page-content">
       <form method="GET" class="filter-bar">
         <i class="bi bi-search" style="color:var(--text-dim);"></i>
-        <input type="text" name="search" placeholder="Search title, location, reporter..." value="<?=htmlspecialchars($search)?>" style="flex:1;min-width:180px;">
-        <select name="status">
+        <input type="text" name="search" placeholder="Search title, location, reporter..." value="<?=htmlspecialchars($search)?>" class="bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700" style="flex:1;min-width:180px;">
+        <select name="status" class="bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700">
           <option value="">All Status</option>
           <?php foreach(['pending','in_progress','resolved','closed','rejected'] as $s):?><option value="<?=$s?>"<?=$sf===$s?' selected':''?>><?=ucwords(str_replace('_',' ',$s))?></option><?php endforeach;?>
         </select>
-        <select name="priority">
+        <select name="priority" class="bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700">
           <option value="">All Priority</option>
           <?php foreach(['low','medium','high','critical'] as $p):?><option value="<?=$p?>"<?=$pf===$p?' selected':''?>><?=ucfirst($p)?></option><?php endforeach;?>
         </select>
-        <button type="submit" class="btn btn-secondary" style="padding:5px 12px;">Filter</button>
+        <button type="submit" class="bg-zinc-800 text-zinc-300 border border-zinc-700/60 hover:bg-zinc-700/80 hover:text-zinc-100 font-sans text-xs font-semibold px-3 py-1.5 rounded-md transition-colors shadow-none focus:outline-none focus:ring-1 focus:ring-zinc-600">Filter</button>
         <a href="issues.php" style="font-size:.75rem;color:var(--text-dim);align-self:center;">Clear</a>
       </form>
       <div class="panel">

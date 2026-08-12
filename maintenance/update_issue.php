@@ -45,6 +45,7 @@ $pageTitle='Update Issue #'.$id; $pageSubtitle=htmlspecialchars($issue['title'])
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Update Issue – FixMyCampus</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="../assets/css/style.css"></head>
 <body>
 <div class="app-wrapper">
@@ -91,16 +92,16 @@ $pageTitle='Update Issue #'.$id; $pageSubtitle=htmlspecialchars($issue['title'])
               <form method="POST">
                 <div class="field-group">
                   <label>Set Status To</label>
-                  <select name="new_status">
+                  <select name="new_status" class="bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 w-full">
                     <option value="in_progress" <?= $issue['status']==='in_progress'?'selected':'' ?>>🔧 In Progress</option>
                     <option value="resolved">✅ Mark as Resolved</option>
                   </select>
                 </div>
                 <div class="field-group">
                   <label>Work Notes / Remark *</label>
-                  <textarea name="remarks" rows="4" placeholder="Describe the work done, parts replaced, or reason if not yet complete..." required></textarea>
+                  <textarea name="remarks" rows="4" placeholder="Describe the work done, parts replaced, or reason if not yet complete..." required class="bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 w-full"></textarea>
                 </div>
-                <button type="submit" class="btn-primary-gradient" style="width:100%;padding:12px;">
+                <button type="submit" class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 font-sans text-xs font-semibold px-3 py-1.5 rounded-md transition-colors shadow-none focus:outline-none focus:ring-1 focus:ring-emerald-500 w-full justify-center flex items-center" style="padding:12px;">
                   <i class="bi bi-check-circle me-2"></i>Submit Update
                 </button>
               </form>

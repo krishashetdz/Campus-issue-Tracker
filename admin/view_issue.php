@@ -65,6 +65,7 @@ $pageTitle = 'Issue #'.$id.' – Admin View'; $pageSubtitle = htmlspecialchars($
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Issue #<?= $id ?> Admin – FixMyCampus</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
@@ -145,7 +146,7 @@ $pageTitle = 'Issue #'.$id.' – Admin View'; $pageSubtitle = htmlspecialchars($
                 <input type="hidden" name="action" value="assign">
                 <div class="field-group">
                   <label>Assign to Staff</label>
-                  <select name="assigned_to" required>
+                  <select name="assigned_to" required class="bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 w-full">
                     <option value="">-- Select Staff --</option>
                     <?php foreach($maintStaff as $ms): ?>
                       <option value="<?= $ms['user_id'] ?>" <?= $issue['assigned_to']==$ms['user_id']?'selected':'' ?>>
@@ -156,9 +157,9 @@ $pageTitle = 'Issue #'.$id.' – Admin View'; $pageSubtitle = htmlspecialchars($
                 </div>
                 <div class="field-group">
                   <label>Remarks (optional)</label>
-                  <textarea name="remarks" rows="2" placeholder="Instructions for staff..."></textarea>
+                  <textarea name="remarks" rows="2" placeholder="Instructions for staff..." class="bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 w-full"></textarea>
                 </div>
-                <button type="submit" class="btn-glow" style="width:100%;padding:10px;"><i class="bi bi-person-plus me-2"></i>Assign & Set In Progress</button>
+                <button type="submit" class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 font-sans text-xs font-semibold px-3 py-1.5 rounded-md transition-colors shadow-none focus:outline-none focus:ring-1 focus:ring-emerald-500 w-full justify-center flex items-center" style="padding:10px;"><i class="bi bi-person-plus me-2"></i>Assign & Set In Progress</button>
               </form>
             </div>
           </div>
@@ -172,7 +173,7 @@ $pageTitle = 'Issue #'.$id.' – Admin View'; $pageSubtitle = htmlspecialchars($
                 <input type="hidden" name="action" value="status">
                 <div class="field-group">
                   <label>New Status</label>
-                  <select name="new_status">
+                  <select name="new_status" class="bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 w-full">
                     <?php foreach(['pending','in_progress','resolved','closed','rejected'] as $s): ?>
                       <option value="<?= $s ?>" <?= $issue['status']===$s?'selected':'' ?>><?= ucwords(str_replace('_',' ',$s)) ?></option>
                     <?php endforeach; ?>
@@ -180,9 +181,9 @@ $pageTitle = 'Issue #'.$id.' – Admin View'; $pageSubtitle = htmlspecialchars($
                 </div>
                 <div class="field-group">
                   <label>Remark / Reason *</label>
-                  <textarea name="remarks" rows="2" placeholder="Reason for status change..." required></textarea>
+                  <textarea name="remarks" rows="2" placeholder="Reason for status change..." required class="bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 w-full"></textarea>
                 </div>
-                <button type="submit" class="btn-primary-gradient" style="width:100%;padding:10px;"><i class="bi bi-check-circle me-2"></i>Update Status</button>
+                <button type="submit" class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 font-sans text-xs font-semibold px-3 py-1.5 rounded-md transition-colors shadow-none focus:outline-none focus:ring-1 focus:ring-emerald-500 w-full justify-center flex items-center" style="padding:10px;"><i class="bi bi-check-circle me-2"></i>Update Status</button>
               </form>
             </div>
           </div>

@@ -25,9 +25,10 @@ $error_get=htmlspecialchars($_GET['error']??'');
 <meta name="description" content="Sign in to FixMyCampus — the campus issue tracking platform.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#D2C4B1;--burg:#4A0E17;--burg2:#7B1E2B;--cream:#EAE0D3;--cream2:#F5F0EB;--r:24px;--g:12px}
+:root{--bg:#dad0be;--burg:#4A0E17;--burg2:#7B1E2B;--cream:#EAE0D3;--cream2:#F5F0EB;--r:24px;--g:12px}
 html,body{min-height:100vh;background:var(--bg);font-family:'DM Sans',sans-serif;-webkit-font-smoothing:antialiased}
 .nav{display:flex;align-items:center;justify-content:space-between;background:var(--burg);border-radius:var(--r);padding:13px 22px;margin:12px 12px 0;gap:12px}
 .nav-brand{font-family:'Playfair Display',serif;font-size:1.05rem;color:#fff;letter-spacing:-.01em;text-decoration:none}
@@ -153,14 +154,14 @@ html,body{min-height:100vh;background:var(--bg);font-family:'DM Sans',sans-serif
           <label class="llabel" for="lemail">Email address</label>
           <div class="lwrap">
             <span class="licon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
-            <input type="email" id="lemail" name="email" class="linput" placeholder="you@campus.edu" required autocomplete="email" value="<?=htmlspecialchars($_POST['email']??'')?>">
+            <input type="email" id="lemail" name="email" class="linput bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700" placeholder="you@campus.edu" required autocomplete="email" value="<?=htmlspecialchars($_POST['email']??'')?>">
           </div>
         </div>
         <div class="lgrp">
           <label class="llabel" for="lpwd">Password</label>
           <div class="lwrap">
             <span class="licon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
-            <input type="password" id="lpwd" name="password" class="linput" placeholder="Enter your password" required autocomplete="current-password" style="padding-right:36px">
+            <input type="password" id="lpwd" name="password" class="linput bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700" placeholder="Enter your password" required autocomplete="current-password" style="padding-right:36px">
             <button type="button" class="leye" id="eyeBtn" aria-label="Toggle password">
               <svg id="eyeO" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               <svg id="eyeC" viewBox="0 0 24 24" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
@@ -168,7 +169,7 @@ html,body{min-height:100vh;background:var(--bg);font-family:'DM Sans',sans-serif
           </div>
         </div>
         <div class="ldiv"></div>
-        <button type="submit" class="lbtn" id="sbtn">Sign In</button>
+        <button type="submit" class="lbtn bg-zinc-100 text-zinc-950 hover:bg-zinc-200 font-sans text-xs font-semibold px-3 py-2 rounded-md transition-colors shadow-none focus:outline-none focus:ring-1 focus:ring-zinc-400 w-full" id="sbtn">Sign In</button>
         <p class="lfoot">No account? <a href="register.php">Create one</a></p>
       </form>
     </div>

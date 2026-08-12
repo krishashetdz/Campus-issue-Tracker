@@ -35,6 +35,7 @@ $pageTitle='Users Management'; $pageSubtitle='View and manage registered users';
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Users – FixMyCampus Admin</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
@@ -47,14 +48,14 @@ $pageTitle='Users Management'; $pageSubtitle='View and manage registered users';
       <?php if($err): ?><div class="alert-banner alert-danger"><i class="bi bi-exclamation-circle me-2"></i><?= htmlspecialchars($err) ?></div><?php endif; ?>
 
       <form method="GET" class="filter-bar">
-        <input type="text" name="search" placeholder="🔍 Search name, email, department..." value="<?= htmlspecialchars($search) ?>" style="flex:1;min-width:200px;">
-        <select name="role">
+        <input type="text" name="search" placeholder="🔍 Search name, email, department..." value="<?= htmlspecialchars($search) ?>" class="bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700" style="flex:1;min-width:200px;">
+        <select name="role" class="bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-500 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700">
           <option value="">All Roles</option>
           <?php foreach(['student','staff','admin','maintenance'] as $r): ?>
             <option value="<?= $r ?>" <?= $roleFilter===$r?'selected':'' ?>><?= ucfirst($r) ?></option>
           <?php endforeach; ?>
         </select>
-        <button type="submit" class="btn-glow" style="padding:8px 18px;">Filter</button>
+        <button type="submit" class="bg-zinc-800 text-zinc-300 border border-zinc-700/60 hover:bg-zinc-700/80 hover:text-zinc-100 font-sans text-xs font-semibold px-3 py-1.5 rounded-md transition-colors shadow-none focus:outline-none focus:ring-1 focus:ring-zinc-600">Filter</button>
         <a href="users.php" style="color:var(--text-muted);font-size:0.85rem;text-decoration:none;align-self:center;">Clear</a>
       </form>
 
