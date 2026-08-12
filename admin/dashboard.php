@@ -57,18 +57,18 @@ $pageTitle='Dashboard';$pageSubtitle='System overview';
           </table>
         </div>
         <div style="display:flex;flex-direction:column;gap:12px;">
-          <div class="panel">
+          <div class="panel-burg">
             <div class="panel-header"><span><i class="bi bi-pie-chart me-2"></i>By Category</span></div>
             <div class="panel-body" style="padding:12px 14px;">
               <?php $max=max(array_column($catStats,'cnt')??[1]);foreach($catStats as $cs):$pct=$max>0?round(($cs['cnt']/$max)*100):0;?>
               <div style="margin-bottom:10px;">
-                <div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="font-size:.75rem;font-weight:500;"><?=htmlspecialchars($cs['category_name'])?></span><span class="issue-id"><?=$cs['cnt']?></span></div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="font-size:.75rem;font-weight:500;color:var(--peach);"><?=htmlspecialchars($cs['category_name'])?></span><span style="font-size:.72rem;color:var(--peach-dim);"><?=$cs['cnt']?></span></div>
                 <div class="mini-bar-track"><div class="mini-bar-fill" style="width:<?=$pct?>%"></div></div>
               </div>
               <?php endforeach;?>
             </div>
           </div>
-          <div class="panel">
+          <div class="panel-burg">
             <div class="panel-header"><i class="bi bi-lightning me-2"></i>Quick Actions</div>
             <div class="panel-body" style="padding:12px 14px;">
               <a href="issues.php?status=pending" class="quick-action"><i class="bi bi-clock"></i>Review Pending</a>

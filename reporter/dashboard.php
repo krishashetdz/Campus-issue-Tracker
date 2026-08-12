@@ -58,7 +58,7 @@ $pageTitle='Dashboard';$pageSubtitle='Welcome back, '.explode(' ',$u['name'])[0]
           <?php endif;?>
         </div>
         <div style="display:flex;flex-direction:column;gap:12px;">
-          <div class="panel">
+          <div class="panel-burg">
             <div class="panel-header"><i class="bi bi-lightning me-2"></i>Quick Actions</div>
             <div class="panel-body" style="padding:12px 14px;">
               <a href="report_issue.php" class="quick-action"><i class="bi bi-plus-square"></i>Report New Issue</a>
@@ -66,14 +66,14 @@ $pageTitle='Dashboard';$pageSubtitle='Welcome back, '.explode(' ',$u['name'])[0]
               <a href="notifications.php" class="quick-action"><i class="bi bi-bell"></i>Notifications<?php if($unread>0):?><span class="menu-badge" style="margin-left:auto;"><?=$unread?></span><?php endif;?></a>
             </div>
           </div>
-          <div class="panel">
+          <div class="panel-burg">
             <div class="panel-header"><i class="bi bi-info-circle me-2"></i>Tips</div>
             <div class="panel-body" style="padding:12px 14px;">
-              <div style="font-size:.75rem;color:var(--text-muted);line-height:2.2;">
-                <div><i class="bi bi-image me-1" style="color:var(--text-dim)"></i>Add photos for faster review</div>
-                <div><i class="bi bi-geo-alt me-1" style="color:var(--text-dim)"></i>Be specific about location</div>
-                <div><i class="bi bi-exclamation-triangle me-1" style="color:var(--text-dim)"></i>Mark Critical for safety hazards</div>
-                <div><i class="bi bi-bell me-1" style="color:var(--text-dim)"></i>Check notifications for updates</div>
+              <div style="font-size:.75rem;color:var(--peach-dim);line-height:2.2;">
+                <div><i class="bi bi-image me-1" style="color:var(--peach2)"></i>Add photos for faster review</div>
+                <div><i class="bi bi-geo-alt me-1" style="color:var(--peach2)"></i>Be specific about location</div>
+                <div><i class="bi bi-exclamation-triangle me-1" style="color:var(--peach2)"></i>Mark Critical for safety hazards</div>
+                <div><i class="bi bi-bell me-1" style="color:var(--peach2)"></i>Check notifications for updates</div>
               </div>
             </div>
           </div>
