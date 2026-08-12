@@ -62,14 +62,14 @@ html,body{min-height:100vh;background:var(--bg);font-family:'DM Sans',sans-serif
 .lgrp{display:flex;flex-direction:column;gap:.28rem}
 .llabel{font-size:.69rem;font-weight:500;color:rgba(255,255,255,.5)}
 .lwrap{position:relative;display:flex;align-items:center}
-.licon{position:absolute;left:12px;pointer-events:none;color:rgba(255,255,255,.28);display:flex;align-items:center}
+.licon{position:absolute;left:11px;pointer-events:none;color:#4a4036;display:flex;align-items:center;z-index:2}
 .licon svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
-.linput{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.11);border-radius:10px;padding:10px 14px 10px 35px;font-family:'DM Sans',sans-serif;font-size:.84rem;color:#fff;outline:none;transition:border-color .18s,box-shadow .18s}
-.linput::placeholder{color:rgba(255,255,255,.22)}
-.linput:focus{border-color:rgba(255,255,255,.32);box-shadow:0 0 0 3px rgba(255,255,255,.05)}
-.leye{position:absolute;right:10px;background:none;border:none;color:rgba(255,255,255,.28);cursor:pointer;display:flex;align-items:center;padding:3px;transition:color .15s}
-.leye:hover{color:rgba(255,255,255,.6)}
-.leye svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.linput{width:100%;background:#f8f6f0;border:1px solid #d4c8b8;border-radius:8px;padding:6px 34px 6px 34px;font-family:'DM Sans',sans-serif;font-size:.78rem;color:#2b0d0d;outline:none;transition:border-color .18s,box-shadow .18s;height:36px}
+.linput::placeholder{color:#8a7575}
+.linput:focus{border-color:#b45309;box-shadow:0 0 0 1px #b45309}
+.leye{position:absolute;right:10px;background:none;border:none;color:#2b0d0d;cursor:pointer;display:flex;align-items:center;padding:4px;transition:color .15s;z-index:2}
+.leye:hover{color:#4a0e17}
+.leye svg{width:15px;height:15px;stroke:#2b0d0d;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .ldiv{height:1px;background:rgba(255,255,255,.1);margin:.4rem 0}
 .lbtn{width:100%;padding:11px;background:var(--cream2);border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.84rem;font-weight:700;color:var(--burg);cursor:pointer;transition:background .18s,transform .16s}
 .lbtn:hover{background:#fff;transform:translateY(-1px)}
@@ -154,15 +154,15 @@ html,body{min-height:100vh;background:var(--bg);font-family:'DM Sans',sans-serif
           <label class="llabel" for="lemail">Email address</label>
           <div class="lwrap">
             <span class="licon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
-            <input type="email" id="lemail" name="email" class="linput bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700" placeholder="you@campus.edu" required autocomplete="email" value="<?=htmlspecialchars($_POST['email']??'')?>">
+            <input type="email" id="lemail" name="email" class="linput bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-1.5 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700 h-9" placeholder="you@campus.edu" required autocomplete="email" value="<?=htmlspecialchars($_POST['email']??'')?>" style="padding-left:34px;">
           </div>
         </div>
         <div class="lgrp">
           <label class="llabel" for="lpwd">Password</label>
           <div class="lwrap">
             <span class="licon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
-            <input type="password" id="lpwd" name="password" class="linput bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700" placeholder="Enter your password" required autocomplete="current-password" style="padding-right:36px">
-            <button type="button" class="leye" id="eyeBtn" aria-label="Toggle password">
+            <input type="password" id="lpwd" name="password" class="linput bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-1.5 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700 h-9" placeholder="Enter your password" required autocomplete="current-password" style="padding-left:34px;padding-right:34px;">
+            <button type="button" class="leye" id="eyeBtn" aria-label="Toggle password visibility">
               <svg id="eyeO" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               <svg id="eyeC" viewBox="0 0 24 24" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
             </button>

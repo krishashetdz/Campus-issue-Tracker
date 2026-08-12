@@ -54,14 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 <div class="auth-wrapper">
   <div class="auth-card" style="flex:0 0 460px;max-width:460px;">
-    <div class="auth-wordmark" style="margin-bottom:16px;">
-      <div class="mark-box">
-        <svg viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-          <path d="M8 1a7 7 0 100 14A7 7 0 008 1zM2 8a6 6 0 1112 0A6 6 0 012 8z"/>
-          <path d="M8 5a1 1 0 011 1v1.586l1.707 1.707a1 1 0 01-1.414 1.414L7.586 9H6a1 1 0 010-2h1V6a1 1 0 011-1z"/>
-        </svg>
-      </div>
-      FixMyCampus
+    <div class="flex justify-center items-center text-center pt-2 pb-4 mb-2">
+      <img src="assets/images/logo_fmc_full.png" alt="FixMyCampus Logo" class="w-56 max-w-[220px] h-auto object-contain mx-auto">
     </div>
     <div class="auth-card-title">Create your account</div>
     <div class="auth-card-sub">Join and start reporting campus issues today</div>
@@ -79,45 +73,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="mb-3">
         <label class="form-label" for="full_name">Full Name *</label>
         <div class="input-group">
-          <span class="input-group-text"><i class="bi bi-person"></i></span>
-          <input type="text" id="full_name" name="full_name" class="form-control bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700" placeholder="John Doe" required value="<?= htmlspecialchars($_POST['full_name'] ?? '') ?>">
+          <span class="input-group-text"><i class="bi bi-person text-[#4a4036]"></i></span>
+          <input type="text" id="full_name" name="full_name" class="form-control bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-1.5 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700 h-9" placeholder="John Doe" required value="<?= htmlspecialchars($_POST['full_name'] ?? '') ?>">
         </div>
       </div>
       <div class="mb-3">
         <label class="form-label" for="reg_email">Email Address *</label>
         <div class="input-group">
-          <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-          <input type="email" id="reg_email" name="email" class="form-control bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700" placeholder="you@campus.edu" required value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
+          <span class="input-group-text"><i class="bi bi-envelope text-[#4a4036]"></i></span>
+          <input type="email" id="reg_email" name="email" class="form-control bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-1.5 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700 h-9" placeholder="you@campus.edu" required value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
         </div>
       </div>
       <div class="row mb-3">
         <div class="col-md-6">
           <label class="form-label" for="role">Role *</label>
-          <select id="role" name="role" class="form-control bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700">
+          <select id="role" name="role" class="form-control bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-1.5 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700 h-9">
             <option value="student" <?= ($_POST['role']??'student')==='student'?'selected':'' ?>>Student</option>
             <option value="staff"   <?= ($_POST['role']??'')==='staff'?'selected':'' ?>>Staff</option>
           </select>
         </div>
         <div class="col-md-6">
           <label class="form-label" for="department">Department *</label>
-          <input type="text" id="department" name="department" class="form-control bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700" placeholder="e.g. Computer Science" required value="<?= htmlspecialchars($_POST['department'] ?? '') ?>">
+          <input type="text" id="department" name="department" class="form-control bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-1.5 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700 h-9" placeholder="e.g. Computer Science" required value="<?= htmlspecialchars($_POST['department'] ?? '') ?>">
         </div>
       </div>
       <div class="mb-3">
         <label class="form-label" for="phone">Phone Number</label>
         <div class="input-group">
-          <span class="input-group-text"><i class="bi bi-phone"></i></span>
-          <input type="tel" id="phone" name="phone" class="form-control bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700" placeholder="9876543210" value="<?= htmlspecialchars($_POST['phone'] ?? '') ?>">
+          <span class="input-group-text"><i class="bi bi-phone text-[#4a4036]"></i></span>
+          <input type="tel" id="phone" name="phone" class="form-control bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-1.5 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700 h-9" placeholder="9876543210" value="<?= htmlspecialchars($_POST['phone'] ?? '') ?>">
         </div>
       </div>
       <div class="row mb-4">
         <div class="col-md-6">
           <label class="form-label" for="password">Password *</label>
-          <input type="password" id="password" name="password" class="form-control bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700" placeholder="Min. 6 characters" required>
+          <div style="position:relative;display:flex;align-items:center;">
+            <input type="password" id="password" name="password" class="form-control bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-1.5 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700 h-9" placeholder="Min. 6 characters" required style="padding-right:34px;">
+            <button type="button" class="eye-toggle-btn" data-target="password" aria-label="Toggle password visibility" style="position:absolute;right:8px;background:none;border:none;color:#2b0d0d;cursor:pointer;display:flex;align-items:center;padding:4px;z-index:2;">
+              <i class="bi bi-eye text-sm eye-open"></i>
+              <i class="bi bi-eye-slash text-sm eye-closed" style="display:none;"></i>
+            </button>
+          </div>
         </div>
         <div class="col-md-6">
           <label class="form-label" for="confirm_password">Confirm Password *</label>
-          <input type="password" id="confirm_password" name="confirm_password" class="form-control bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700" placeholder="Repeat password" required>
+          <div style="position:relative;display:flex;align-items:center;">
+            <input type="password" id="confirm_password" name="confirm_password" class="form-control bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-1.5 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700 h-9" placeholder="Repeat password" required style="padding-right:34px;">
+            <button type="button" class="eye-toggle-btn" data-target="confirm_password" aria-label="Toggle confirm password visibility" style="position:absolute;right:8px;background:none;border:none;color:#2b0d0d;cursor:pointer;display:flex;align-items:center;padding:4px;z-index:2;">
+              <i class="bi bi-eye text-sm eye-open"></i>
+              <i class="bi bi-eye-slash text-sm eye-closed" style="display:none;"></i>
+            </button>
+          </div>
         </div>
       </div>
       <button type="submit" class="bg-zinc-100 text-zinc-950 hover:bg-zinc-200 font-sans text-xs font-semibold px-3 py-2 rounded-md transition-colors shadow-none focus:outline-none focus:ring-1 focus:ring-zinc-400 w-full">Create Account</button>
@@ -129,5 +135,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </p>
   </div>
 </div>
+<script>
+document.querySelectorAll('.eye-toggle-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    const targetId = btn.getAttribute('data-target');
+    const input = document.getElementById(targetId);
+    if (input) {
+      const isPwd = input.type === 'password';
+      input.type = isPwd ? 'text' : 'password';
+      const openIcon = btn.querySelector('.eye-open');
+      const closedIcon = btn.querySelector('.eye-closed');
+      if (openIcon && closedIcon) {
+        openIcon.style.display = isPwd ? 'none' : 'inline-block';
+        closedIcon.style.display = isPwd ? 'inline-block' : 'none';
+      }
+    }
+  });
+});
+</script>
 </body>
 </html>
