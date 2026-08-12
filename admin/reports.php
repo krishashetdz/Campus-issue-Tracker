@@ -22,8 +22,27 @@ $statusData = $pdo->query("SELECT status, COUNT(*) AS cnt FROM issues GROUP BY s
 // Issues by priority
 $priData = $pdo->query("SELECT priority, COUNT(*) AS cnt FROM issues GROUP BY priority ORDER BY FIELD(priority,'critical','high','medium','low')")->fetchAll();
 
-// Monthly issues (last 6 months)
-$monthlyData = $pdo->query("SELECT DATE_FORMAT(created_at,'%b %Y') AS month, COUNT(*) AS cnt FROM issues WHERE created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH) GROUP BY month ORDER BY MIN(created_at) ASC")->fetchAll();
+// Monthly issues (last 6 rolling months)
+$months = [];
+for ($i = 5; $i >= 0; $i--) {
+    $monthKey   = date('Y-m', strtotime("-$i months"));
+    $monthLabel = date('M Y', strtotime("-$i months"));
+    $months[$monthKey] = [
+        'label' => $monthLabel,
+        'count' => 0
+    ];
+}
+
+$dbMonthly = $pdo->query("SELECT DATE_FORMAT(created_at, '%Y-%m') AS month_key, COUNT(*) AS total FROM issues WHERE created_at >= DATE_SUB(NOW(), INTERVAL 5 MONTH) GROUP BY month_key")->fetchAll();
+
+foreach ($dbMonthly as $row) {
+    if (isset($months[$row['month_key']])) {
+        $months[$row['month_key']]['count'] = (int)$row['total'];
+    }
+}
+
+$monthlyLabels = array_column($months, 'label');
+$monthlyCounts = array_column($months, 'count');
 
 // Top reporters
 $topReporters = $pdo->query("SELECT u.full_name, u.role, COUNT(i.issue_id) AS cnt FROM users u LEFT JOIN issues i ON i.reported_by=u.user_id GROUP BY u.user_id ORDER BY cnt DESC LIMIT 5")->fetchAll();
@@ -145,8 +164,8 @@ $pageTitle='Reports & Analytics'; $pageSubtitle='Issue statistics and system ove
 document.addEventListener("DOMContentLoaded", function() {
   const ctx = document.getElementById('monthlyTrendChart');
   if (ctx) {
-    const monthLabels = <?= json_encode(array_column($monthlyData, 'month') ?: ['No Data']) ?>;
-    const monthCounts = <?= json_encode(array_column($monthlyData, 'cnt') ?: [0]) ?>;
+    const monthLabels = <?= json_encode($monthlyLabels) ?>;
+    const monthCounts = <?= json_encode($monthlyCounts) ?>;
     
     new Chart(ctx, {
       type: 'bar',
