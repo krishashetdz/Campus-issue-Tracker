@@ -36,6 +36,7 @@ $pageTitle='Reports & Analytics'; $pageSubtitle='Issue statistics and system ove
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Reports – FixMyCampus Admin</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
@@ -131,21 +132,75 @@ $pageTitle='Reports & Analytics'; $pageSubtitle='Issue statistics and system ove
         <div class="panel">
           <div class="panel-header"><i class="bi bi-graph-up me-2"></i>Monthly Trend (Last 6 Months)</div>
           <div class="panel-body">
-            <?php if(empty($monthlyData)): ?>
-              <p style="color:var(--text-muted);font-size:0.85rem;">Not enough data yet.</p>
-            <?php else: 
-              $maxMonth = max(array_column($monthlyData,'cnt') ?: [1]);
-              foreach($monthlyData as $md): $pct=round(($md['cnt']/$maxMonth)*100); ?>
-              <div style="margin-bottom:12px;">
-                <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:0.8rem;"><?= htmlspecialchars($md['month']) ?></span><span style="font-size:0.78rem;color:var(--text-muted);"><?= $md['cnt'] ?></span></div>
-                <div style="height:8px;background:var(--border-color);border-radius:8px;overflow:hidden;"><div style="width:<?= $pct ?>%;height:100%;background:var(--primary);border-radius:8px;"></div></div>
-              </div>
-              <?php endforeach; endif; ?>
+            <div style="position:relative;height:210px;width:100%;">
+              <canvas id="monthlyTrendChart"></canvas>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const ctx = document.getElementById('monthlyTrendChart');
+  if (ctx) {
+    const monthLabels = <?= json_encode(array_column($monthlyData, 'month') ?: ['No Data']) ?>;
+    const monthCounts = <?= json_encode(array_column($monthlyData, 'cnt') ?: [0]) ?>;
+    
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: monthLabels,
+        datasets: [{
+          label: 'Issues Reported',
+          data: monthCounts,
+          backgroundColor: 'rgba(74, 14, 23, 0.85)',
+          borderColor: '#4A0E17',
+          borderWidth: 1.5,
+          borderRadius: 6,
+          hoverBackgroundColor: '#7B1E2B'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#4A0E17',
+            titleColor: '#FFD8BE',
+            bodyColor: '#FFFFFF',
+            padding: 10,
+            cornerRadius: 6
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+              color: '#2b0d0d',
+              font: { family: "'DM Sans', sans-serif", size: 11, weight: '600' }
+            },
+            grid: {
+              color: 'rgba(74, 14, 23, 0.08)'
+            }
+          },
+          x: {
+            ticks: {
+              color: '#2b0d0d',
+              font: { family: "'DM Sans', sans-serif", size: 11, weight: '600' }
+            },
+            grid: {
+              display: false
+            }
+          }
+        }
+      }
+    });
+  }
+});
+</script>
 </body>
 </html>
