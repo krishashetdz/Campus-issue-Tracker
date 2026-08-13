@@ -56,11 +56,28 @@ $pageSubtitle = htmlspecialchars($issue['title']);
         <!-- Left: Issue Details -->
         <div style="display:flex;flex-direction:column;gap:16px;">
           <div class="panel fade-in-up">
-            <div class="panel-header">
-              <span style="font-size:1rem;font-weight:700;"><?= htmlspecialchars($issue['title']) ?></span>
+            <div class="panel-header" style="display:flex;align-items:center;justify-content:space-between;">
+              <div>
+                <span style="font-size:1rem;font-weight:700;"><?= htmlspecialchars($issue['title']) ?></span>
+                <?php if(!empty($issue['is_parent']) || (!empty($issue['affected_count']) && $issue['affected_count']>1)): ?>
+                  <span class="inline-flex items-center gap-1 font-mono text-xs bg-amber-500/10 text-amber-600 border border-amber-500/20 px-2 py-0.5 rounded font-semibold ml-2">
+                    👥 <?= $issue['affected_count'] ?> Affected | Incident #FM<?= $issue['issue_id'] ?>
+                  </span>
+                <?php elseif(!empty($issue['parent_id'])): ?>
+                  <span class="inline-flex items-center gap-1 font-mono text-xs bg-purple-500/10 text-purple-600 border border-purple-500/20 px-2 py-0.5 rounded font-medium ml-2">
+                    🔗 Merged → #FM<?= $issue['parent_id'] ?>
+                  </span>
+                <?php endif; ?>
+              </div>
               <div style="display:flex;gap:8px;"><?= getPriorityBadge($issue['priority']) ?> <?= getStatusBadge($issue['status']) ?></div>
             </div>
             <div class="panel-body">
+              <?php if(!empty($issue['parent_id'])): ?>
+              <div style="background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:0.8rem;color:#6b21a8;display:flex;align-items:center;gap:8px;">
+                <i class="bi bi-info-circle-fill" style="font-size:1.1rem;"></i>
+                <div>Your report has been automatically linked to <b>Parent Incident #FM<?= $issue['parent_id'] ?></b>. Updates and status changes to the main incident will automatically sync to your report.</div>
+              </div>
+              <?php endif; ?>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">
                 <div style="background:var(--bg-body);border:1px solid var(--border-color);border-radius:var(--radius);padding:12px;">
                   <div style="font-size:0.7rem;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;letter-spacing:0.1em;">Category</div>

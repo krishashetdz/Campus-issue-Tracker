@@ -31,7 +31,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             sendNotification($pdo,$assignee,$id,"Issue #{$id} has been assigned to you: {$issue['title']}. Priority: ".strtoupper($issue['priority']),'warning');
             // Notify reporter
             sendNotification($pdo,$issue['reported_by'],$id,"Your issue #{$id} is now In Progress. Assigned to ".(isset($aRow)?$aRow['full_name']:'a technician').".","info");
-            $msg = 'Issue assigned successfully.';
+            
+            // Mass propagate assignment to clustered child reports
+            $rootParentId = !empty($issue['is_parent']) ? $id : (!empty($issue['parent_id']) ? $issue['parent_id'] : 0);
+            if ($rootParentId > 0) {
+                $cStmt = $pdo->prepare("SELECT issue_id, reported_by, status FROM issues WHERE (parent_id = ? OR issue_id = ?) AND issue_id != ?");
+                $cStmt->execute([$rootParentId, $rootParentId, $id]);
+                foreach ($cStmt->fetchAll() as $ch) {
+                    $pdo->prepare("UPDATE issues SET assigned_to=?,status='in_progress',admin_remark=?,updated_at=NOW() WHERE issue_id=?")->execute([$assignee, $remarks, $ch['issue_id']]);
+                    logStatusChange($pdo, $ch['issue_id'], $u['id'], $ch['status'], 'in_progress', "Assigned staff via Parent Incident #{$rootParentId}. {$remarks}");
+                    sendNotification($pdo, $ch['reported_by'], $ch['issue_id'], "Your report #{$ch['issue_id']} (linked to Parent Incident #{$rootParentId}) is now In Progress.", 'info');
+                }
+            }
+
+            $msg = 'Issue assigned successfully and mass-propagated to cluster.';
             // re-fetch
             $stmt->execute([$id]); $issue = $stmt->fetch();
         } else { $err = 'Please select a staff member.'; }
@@ -45,17 +58,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Notify reporter
             $notifType = $new_status==='resolved'?'success':($new_status==='rejected'?'danger':'info');
             sendNotification($pdo,$issue['reported_by'],$id,"Your issue #{$id} status changed to '".ucwords(str_replace('_',' ',$new_status))."'. ".($remarks?"Remark: $remarks":''),$notifType);
-            $msg = 'Status updated to ' . ucfirst($new_status) . '.';
+            
+            // Mass propagate status update across all clustered child/parent reports
+            $rootParentId = !empty($issue['is_parent']) ? $id : (!empty($issue['parent_id']) ? $issue['parent_id'] : 0);
+            if ($rootParentId > 0) {
+                $cStmt = $pdo->prepare("SELECT issue_id, reported_by, status FROM issues WHERE (parent_id = ? OR issue_id = ?) AND issue_id != ?");
+                $cStmt->execute([$rootParentId, $rootParentId, $id]);
+                foreach ($cStmt->fetchAll() as $ch) {
+                    $pdo->prepare("UPDATE issues SET status=?,admin_remark=?,updated_at=NOW() WHERE issue_id=?")->execute([$new_status, $remarks, $ch['issue_id']]);
+                    logStatusChange($pdo, $ch['issue_id'], $u['id'], $ch['status'], $new_status, "Status sync from Parent Incident #{$rootParentId}. {$remarks}");
+                    sendNotification($pdo, $ch['reported_by'], $ch['issue_id'], "Your report #{$ch['issue_id']} (linked to Parent Incident #{$rootParentId}) status changed to '".ucwords(str_replace('_',' ',$new_status))."'. ".($remarks?"Remark: $remarks":''), $notifType);
+                }
+            }
+
+            $msg = 'Status updated to ' . ucfirst($new_status) . ' and mass-propagated across cluster.';
             $stmt->execute([$id]); $issue = $stmt->fetch();
         } else { $err = 'Invalid status.'; }
     }
 }
 
-// Get maintenance staff
+// Get maintenance staff & cluster roster
 $maintStaff = $pdo->query("SELECT user_id,full_name,department FROM users WHERE role='maintenance' ORDER BY full_name")->fetchAll();
 $images = $pdo->prepare("SELECT * FROM issue_images WHERE issue_id=?"); $images->execute([$id]); $images=$images->fetchAll();
 $history = $pdo->prepare("SELECT sh.*,u.full_name FROM status_history sh LEFT JOIN users u ON sh.changed_by=u.user_id WHERE sh.issue_id=? ORDER BY sh.changed_at ASC"); $history->execute([$id]); $history=$history->fetchAll();
 $statusColors = ['pending'=>'#f59e0b','in_progress'=>'#8b5cf6','resolved'=>'#10b981','closed'=>'#94a3b8','rejected'=>'#ef4444'];
+
+// Roster Query for Duplicate Incident Cluster
+$rootParentId = !empty($issue['is_parent']) ? $id : (!empty($issue['parent_id']) ? $issue['parent_id'] : 0);
+$roster = [];
+if ($rootParentId > 0) {
+    $rStmt = $pdo->prepare("SELECT i.issue_id, i.created_at, i.status, i.parent_id, i.is_parent, u.full_name, u.email, u.phone, u.department FROM issues i LEFT JOIN users u ON i.reported_by = u.user_id WHERE i.issue_id = ? OR i.parent_id = ? ORDER BY (i.issue_id = ?) DESC, i.created_at ASC");
+    $rStmt->execute([$rootParentId, $rootParentId, $rootParentId]);
+    $roster = $rStmt->fetchAll();
+}
 
 $pageTitle = 'Issue #'.$id.' – Admin View'; $pageSubtitle = htmlspecialchars($issue['title']);
 ?>
@@ -83,8 +118,19 @@ $pageTitle = 'Issue #'.$id.' – Admin View'; $pageSubtitle = htmlspecialchars($
         <!-- Left: Details -->
         <div style="display:flex;flex-direction:column;gap:16px;">
           <div class="panel">
-            <div class="panel-header">
-              <span style="font-weight:700;"><?= htmlspecialchars($issue['title']) ?></span>
+            <div class="panel-header" style="display:flex;align-items:center;justify-content:space-between;">
+              <div>
+                <span style="font-weight:700;"><?= htmlspecialchars($issue['title']) ?></span>
+                <?php if(!empty($issue['is_parent']) || (!empty($issue['affected_count']) && $issue['affected_count']>1)): ?>
+                  <span class="inline-flex items-center gap-1 font-mono text-xs bg-amber-500/10 text-amber-600 border border-amber-500/20 px-2 py-0.5 rounded font-semibold ml-2">
+                    👥 <?= $issue['affected_count'] ?> Affected | Incident #FM<?= $issue['issue_id'] ?>
+                  </span>
+                <?php elseif(!empty($issue['parent_id'])): ?>
+                  <span class="inline-flex items-center gap-1 font-mono text-xs bg-purple-500/10 text-purple-600 border border-purple-500/20 px-2 py-0.5 rounded font-medium ml-2">
+                    🔗 Merged → #FM<?= $issue['parent_id'] ?>
+                  </span>
+                <?php endif; ?>
+              </div>
               <div style="display:flex;gap:8px;"><?= getPriorityBadge($issue['priority']) ?><?= getStatusBadge($issue['status']) ?></div>
             </div>
             <div class="panel-body">
@@ -105,6 +151,53 @@ $pageTitle = 'Issue #'.$id.' – Admin View'; $pageSubtitle = htmlspecialchars($
               <?php endif; ?>
             </div>
           </div>
+
+          <!-- Affected Reporter Roster Panel -->
+          <?php if (!empty($roster)): ?>
+          <div class="panel fade-in-up">
+            <div class="panel-header" style="display:flex;align-items:center;justify-content:space-between;">
+              <span><i class="bi bi-people-fill me-2"></i>Affected Reporter Roster (<?= count($roster) ?> Reporters)</span>
+              <span class="inline-flex items-center gap-1 font-mono text-xs bg-amber-500/10 text-amber-600 border border-amber-500/20 px-2 py-0.5 rounded font-semibold">
+                👥 Incident #FM<?= $rootParentId ?>
+              </span>
+            </div>
+            <div class="panel-body">
+              <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:12px;">
+                The following reporters are linked to this Parent Incident:
+              </div>
+              <div style="overflow-x:auto;">
+                <table class="table-custom" style="font-size:0.8rem;width:100%;">
+                  <thead>
+                    <tr style="border-bottom:1px solid var(--border-color);text-align:left;">
+                      <th style="padding:8px;">Student / Reporter</th>
+                      <th style="padding:8px;">Contact Info</th>
+                      <th style="padding:8px;">Ticket #</th>
+                      <th style="padding:8px;">Reported Date</th>
+                      <th style="padding:8px;">Role in Cluster</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach ($roster as $rep): ?>
+                    <tr style="border-bottom:1px solid rgba(0,0,0,0.05);">
+                      <td style="padding:8px;font-weight:600;"><?= htmlspecialchars($rep['full_name']) ?> <div style="font-size:0.7rem;font-weight:400;color:var(--text-muted);"><?= htmlspecialchars($rep['department'] ?? 'Student') ?></div></td>
+                      <td style="padding:8px;"><?= htmlspecialchars($rep['email']) ?><?php if(!empty($rep['phone'])): ?><br><span style="font-size:0.7rem;color:var(--text-muted);"><?= htmlspecialchars($rep['phone']) ?></span><?php endif; ?></td>
+                      <td style="padding:8px;"><a href="view_issue.php?id=<?= $rep['issue_id'] ?>" class="issue-id">#<?= $rep['issue_id'] ?></a></td>
+                      <td style="padding:8px;"><?= date('d M Y, h:i A', strtotime($rep['created_at'])) ?></td>
+                      <td style="padding:8px;">
+                        <?php if ($rep['issue_id'] == $rootParentId): ?>
+                          <span class="badge badge-amber">Primary Incident</span>
+                        <?php else: ?>
+                          <span class="badge badge-blue">Merged Duplicate</span>
+                        <?php endif; ?>
+                      </td>
+                    </tr>
+                    <?php endforeach; ?>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <?php endif; ?>
 
           <!-- Images -->
           <?php if(!empty($images)): ?>

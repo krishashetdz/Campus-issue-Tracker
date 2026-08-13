@@ -29,7 +29,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Also notify admin
         $admins=$pdo->query("SELECT user_id FROM users WHERE role='admin'")->fetchAll();
         foreach($admins as $admin) { sendNotification($pdo,$admin['user_id'],$id,"Issue #{$id} marked as '{$new_status}' by {$u['name']}. Remark: {$remarks}",'info'); }
-        $msg = 'Status updated to ' . ucwords(str_replace('_',' ',$new_status)) . '.';
+        
+        // Mass propagate status update to clustered reports
+        $rootParentId = !empty($issue['is_parent']) ? $id : (!empty($issue['parent_id']) ? $issue['parent_id'] : 0);
+        if ($rootParentId > 0) {
+            $cStmt = $pdo->prepare("SELECT issue_id, reported_by, status FROM issues WHERE (parent_id = ? OR issue_id = ?) AND issue_id != ?");
+            $cStmt->execute([$rootParentId, $rootParentId, $id]);
+            foreach ($cStmt->fetchAll() as $ch) {
+                $pdo->prepare("UPDATE issues SET status=?, updated_at=NOW() WHERE issue_id=?")->execute([$new_status, $ch['issue_id']]);
+                logStatusChange($pdo, $ch['issue_id'], $u['id'], $ch['status'], $new_status, "Status sync from Parent Incident #{$rootParentId}. {$remarks}");
+                sendNotification($pdo, $ch['reported_by'], $ch['issue_id'], "Your report #{$ch['issue_id']} (linked to Parent Incident #{$rootParentId}) status changed to '".ucwords(str_replace('_',' ',$new_status))."'. Note: {$remarks}", $type);
+            }
+        }
+
+        $msg = 'Status updated to ' . ucwords(str_replace('_',' ',$new_status)) . ' and synced across incident cluster.';
         $stmt->execute([$id,$u['id']]); $issue=$stmt->fetch();
     }
 }

@@ -40,6 +40,9 @@ CREATE TABLE IF NOT EXISTS issues (
     status ENUM('pending','in_progress','resolved','closed','rejected') NOT NULL DEFAULT 'pending',
     reported_by INT(11) NOT NULL,
     assigned_to INT(11) DEFAULT NULL,
+    parent_id INT(11) DEFAULT NULL,
+    is_parent TINYINT(1) DEFAULT 0,
+    affected_count INT(11) DEFAULT 1,
     admin_remark TEXT DEFAULT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -47,9 +50,11 @@ CREATE TABLE IF NOT EXISTS issues (
     KEY fk_reported_by (reported_by),
     KEY fk_assigned_to (assigned_to),
     KEY fk_category (category_id),
+    KEY fk_parent_issue (parent_id),
     CONSTRAINT fk_reported_by FOREIGN KEY (reported_by) REFERENCES users(user_id) ON DELETE CASCADE,
     CONSTRAINT fk_assigned_to FOREIGN KEY (assigned_to) REFERENCES users(user_id) ON DELETE SET NULL,
-    CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES categories(category_id) ON DELETE SET NULL
+    CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES categories(category_id) ON DELETE SET NULL,
+    CONSTRAINT fk_parent_issue FOREIGN KEY (parent_id) REFERENCES issues(issue_id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
 -- Issue Images Table

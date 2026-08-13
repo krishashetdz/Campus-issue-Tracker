@@ -50,9 +50,36 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
       }
     }
     logStatusChange($pdo,$issue_id,$u['id'],'','pending','Issue submitted by '.$u['name']);
+    
+    // Automated Duplicate Complaint Detection & Incident Clustering
+    $duplicateCheck = $pdo->prepare("SELECT issue_id, parent_id, is_parent FROM issues WHERE category_id = ? AND LOWER(location) = LOWER(?) AND status IN ('pending','in_progress') AND issue_id != ? AND created_at >= NOW() - INTERVAL 24 HOUR ORDER BY created_at ASC LIMIT 1");
+    $duplicateCheck->execute([$category_id, $location, $issue_id]);
+    $activeMatch = $duplicateCheck->fetch();
+
+    $mergedParentId = null;
+    if ($activeMatch) {
+      $mergedParentId = $activeMatch['parent_id'] ? $activeMatch['parent_id'] : $activeMatch['issue_id'];
+      
+      // Set child report's parent_id
+      $pdo->prepare("UPDATE issues SET parent_id = ? WHERE issue_id = ?")->execute([$mergedParentId, $issue_id]);
+      
+      // Mark primary issue as parent and update affected_count
+      $pdo->prepare("UPDATE issues SET is_parent = 1, affected_count = (SELECT COUNT(*) + 1 FROM (SELECT issue_id FROM issues WHERE parent_id = ?) AS tmp) WHERE issue_id = ?")->execute([$mergedParentId, $mergedParentId]);
+      
+      // Log status timeline on parent issue
+      logStatusChange($pdo, $mergedParentId, $u['id'], '', '', "Duplicate report merged from " . $u['name'] . " (Issue #" . $issue_id . ")");
+      
+      sendNotification($pdo, $u['id'], $issue_id, "Your report has been linked to existing Parent Incident #{$mergedParentId}.", 'info');
+    }
+
     $admins=$pdo->query("SELECT user_id FROM users WHERE role='admin'")->fetchAll();
     foreach($admins as $admin){sendNotification($pdo,$admin['user_id'],$issue_id,"New issue #{$issue_id} submitted by {$u['name']}: {$title}",'warning');}
-    $success="Issue #{$issue_id} submitted successfully!";
+    
+    if ($mergedParentId) {
+      $success="Issue #{$issue_id} submitted successfully and auto-merged into Parent Incident #{$mergedParentId}!";
+    } else {
+      $success="Issue #{$issue_id} submitted successfully!";
+    }
   }
 }
 $pageTitle='Report an Issue';$pageSubtitle='Submit a campus problem for resolution';

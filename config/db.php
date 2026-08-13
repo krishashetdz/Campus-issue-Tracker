@@ -163,6 +163,22 @@ try {
         }
     }
 
+    // Auto-migrate Duplicate Complaint Clustering columns if missing
+    try {
+        $cols = $pdo->query("SHOW COLUMNS FROM issues")->fetchAll(PDO::FETCH_COLUMN);
+        if (!in_array('parent_id', $cols)) {
+            $pdo->exec("ALTER TABLE issues ADD COLUMN parent_id INT(11) DEFAULT NULL AFTER assigned_to, ADD KEY fk_parent_issue (parent_id), ADD CONSTRAINT fk_parent_issue FOREIGN KEY (parent_id) REFERENCES issues(issue_id) ON DELETE SET NULL");
+        }
+        if (!in_array('is_parent', $cols)) {
+            $pdo->exec("ALTER TABLE issues ADD COLUMN is_parent TINYINT(1) DEFAULT 0 AFTER parent_id");
+        }
+        if (!in_array('affected_count', $cols)) {
+            $pdo->exec("ALTER TABLE issues ADD COLUMN affected_count INT(11) DEFAULT 1 AFTER is_parent");
+        }
+    } catch (Exception $ex) {
+        // Continue if columns exist or ALTER is restricted
+    }
+
 } catch (PDOException $e) {
     die(json_encode(["error" => "Database connection failed: " . $e->getMessage()]));
 }
