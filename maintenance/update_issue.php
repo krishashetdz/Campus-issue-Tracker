@@ -158,6 +158,7 @@ $pageTitle='Update Issue #'.$id; $pageSubtitle=htmlspecialchars($issue['title'])
             <div style="font-weight:700;margin-bottom:6px;">Issue <?= ucfirst($issue['status']) ?></div>
             <div style="font-size:0.82rem;color:var(--text-muted);">This issue has been closed. No further action required.</div>
           </div></div>
+          <?php endif; ?>
           <!-- Issue Status Card -->
           <div class="panel fade-in-up">
             <div class="panel-header"><i class="bi bi-info-circle me-2"></i>Issue Status</div>

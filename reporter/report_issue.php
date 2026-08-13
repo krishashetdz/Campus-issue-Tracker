@@ -100,6 +100,76 @@ $pageTitle='Report an Issue';$pageSubtitle='Submit a campus problem for resoluti
     <div class="page-content">
       <?php if($error):?><div class="alert-banner alert-danger"><i class="bi bi-exclamation-circle me-1"></i><?=htmlspecialchars($error)?></div><?php endif;?>
       <?php if($success):?><div class="alert-banner alert-success"><i class="bi bi-check-circle me-1"></i><?=htmlspecialchars($success)?><a href="my_issues.php" style="color:inherit;font-weight:600;margin-left:6px;">Track issue</a></div><?php endif;?>
+
+      <!-- Mode Switcher Tabs -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;background:var(--cream);padding:6px;border-radius:10px;border:1px solid rgba(74,14,23,0.15);width:fit-content;">
+        <button type="button" id="tabStandard" onclick="switchReportMode('standard')" style="padding:8px 16px;border-radius:8px;font-size:0.8rem;font-weight:600;border:none;cursor:pointer;background:#3c1515;color:#ffffff;transition:all 0.2s ease;">
+          <i class="bi bi-pencil-square me-1.5"></i>Standard Form
+        </button>
+        <button type="button" id="tabAi" onclick="switchReportMode('ai')" style="padding:8px 16px;border-radius:8px;font-size:0.8rem;font-weight:600;border:none;cursor:pointer;background:transparent;color:#3c1515;transition:all 0.2s ease;">
+          <i class="bi bi-robot me-1.5" style="color:#cbbba8;"></i>AI Assist Mode <span style="font-size:0.65rem;background:#3c1515;color:#ffffff;padding:2px 6px;border-radius:10px;margin-left:4px;">NEW</span>
+        </button>
+      </div>
+
+      <!-- AI Chat Assistant Mode Panel -->
+      <div id="aiReportPanel" class="panel fade-in-up" style="display:none;background:#ffffff;border:1px solid #cbbba8;border-radius:12px;overflow:hidden;margin-bottom:16px;">
+        <div class="panel-header" style="background:#3c1515;color:#ffffff;display:flex;align-items:center;justify-content:space-between;padding:12px 18px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:32px;height:32px;border-radius:50%;background:rgba(203,187,168,0.2);display:flex;align-items:center;justify-content:center;color:#cbbba8;">
+              <i class="bi bi-robot" style="font-size:1.2rem;"></i>
+            </div>
+            <div>
+              <div style="font-weight:700;font-size:0.9rem;color:#ffffff;">FixMyCampus AI Assistant</div>
+              <div style="font-size:0.7rem;color:#cbbba8;">Describe your issue naturally & I'll structure the ticket automatically</div>
+            </div>
+          </div>
+          <span class="badge" style="background:rgba(203,187,168,0.2);color:#cbbba8;border:1px solid rgba(203,187,168,0.4);">Smart Assistant</span>
+        </div>
+
+        <div class="panel-body" style="padding:18px;">
+          <!-- Chat Messages Window -->
+          <div id="chatWindow" style="min-height:200px;max-height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:12px;background:#fcfbfa;border:1px solid #e8e2d8;border-radius:8px;margin-bottom:14px;">
+            <!-- Welcome Message -->
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div style="width:28px;height:28px;border-radius:50%;background:#3c1515;color:#ffffff;display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0;">🤖</div>
+              <div style="background:#ffffff;border:1px solid #cbbba8;color:#2b0d0d;padding:10px 14px;border-radius:0 12px 12px 12px;font-size:0.82rem;line-height:1.5;max-width:85%;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+                Hi <b><?= htmlspecialchars($u['name']) ?></b>! Describe the issue on campus in your own words (e.g. <i>"The AC in C2 classroom is making a loud buzzing noise and isn't cooling"</i>), and I'll extract all details and structure the report for you!
+              </div>
+            </div>
+          </div>
+
+          <!-- Structured Card Summary Result Area -->
+          <div id="aiSummaryCard" style="display:none;background:#fcf9f4;border:1px solid #cbbba8;border-radius:10px;padding:16px;margin-bottom:14px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;border-bottom:1px solid rgba(74,14,23,0.1);padding-bottom:8px;">
+              <span style="font-weight:700;color:#3c1515;font-size:0.85rem;"><i class="bi bi-file-earmark-check me-1.5"></i>Extracted Ticket Summary</span>
+              <span id="aiPriorityBadge" class="badge badge-amber">Medium Priority</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:0.8rem;margin-bottom:12px;">
+              <div><b style="color:#3c1515;">📍 Location:</b> <span id="aiSummaryLocation" style="color:#2b0d0d;font-weight:600;">-</span></div>
+              <div><b style="color:#3c1515;">🔧 Category:</b> <span id="aiSummaryCategory" style="color:#2b0d0d;font-weight:600;">-</span></div>
+              <div style="grid-column: span 2;"><b style="color:#3c1515;">📝 Issue Title:</b> <span id="aiSummaryTitle" style="color:#2b0d0d;font-weight:600;">-</span></div>
+              <div style="grid-column: span 2;"><b style="color:#3c1515;">📄 Description:</b> <div id="aiSummaryDescription" style="color:#555;margin-top:2px;line-height:1.4;">-</div></div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center;justify-content:flex-end;margin-top:14px;border-top:1px solid rgba(74,14,23,0.1);padding-top:12px;">
+              <button type="button" onclick="editAiDetails()" style="background:transparent;border:1px solid #3c1515;color:#3c1515;font-size:0.78rem;font-weight:600;padding:8px 14px;border-radius:6px;cursor:pointer;">
+                <i class="bi bi-pencil me-1"></i>Edit Details
+              </button>
+              <button type="button" onclick="confirmAndCreateTicket()" style="background:#3c1515;border:none;color:#ffffff;font-size:0.78rem;font-weight:600;padding:8px 18px;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:6px;">
+                <i class="bi bi-check-circle-fill" style="color:#cbbba8;"></i>Confirm & Create Ticket
+              </button>
+            </div>
+          </div>
+
+          <!-- User Input Controls -->
+          <div style="display:flex;gap:10px;" id="aiInputControls">
+            <input type="text" id="aiUserInput" placeholder="Type campus issue details here... (e.g. 'AC in C2 class is making a loud buzzing noise')" class="bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2.5 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700" style="flex:1;" onkeydown="if(event.key==='Enter'){event.preventDefault();sendAiMessage();}">
+            <button type="button" id="btnSendAi" onclick="sendAiMessage()" style="background:#3c1515;color:#ffffff;border:none;padding:0 16px;border-radius:6px;font-size:0.8rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;">
+              <span>Analyze</span> <i class="bi bi-send-fill" style="color:#cbbba8;"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <form method="POST" enctype="multipart/form-data">
         <div style="display:grid;grid-template-columns:1fr 260px;gap:14px;">
           <div>
@@ -164,6 +234,146 @@ $pageTitle='Report an Issue';$pageSubtitle='Submit a campus problem for resoluti
   </div>
 </div>
 <script>
+let currentAiData = null;
+
+function switchReportMode(mode) {
+  const tabStd = document.getElementById('tabStandard');
+  const tabAi = document.getElementById('tabAi');
+  const aiPanel = document.getElementById('aiReportPanel');
+
+  if (mode === 'ai') {
+    tabAi.style.background = '#3c1515';
+    tabAi.style.color = '#ffffff';
+    tabStd.style.background = 'transparent';
+    tabStd.style.color = '#3c1515';
+    aiPanel.style.display = 'block';
+  } else {
+    tabStd.style.background = '#3c1515';
+    tabStd.style.color = '#ffffff';
+    tabAi.style.background = 'transparent';
+    tabAi.style.color = '#3c1515';
+    aiPanel.style.display = 'none';
+  }
+}
+
+async function sendAiMessage() {
+  const inputEl = document.getElementById('aiUserInput');
+  const msg = inputEl.value.trim();
+  if (!msg) return;
+
+  const chatWin = document.getElementById('chatWindow');
+  const btnSend = document.getElementById('btnSendAi');
+
+  const userMsgHtml = `
+    <div style="display:flex;gap:10px;align-items:flex-start;justify-content:flex-end;">
+      <div style="background:#3c1515;color:#ffffff;padding:10px 14px;border-radius:12px 0 12px 12px;font-size:0.82rem;line-height:1.5;max-width:80%;">
+        ${escapeHtml(msg)}
+      </div>
+      <div style="width:28px;height:28px;border-radius:50%;background:#cbbba8;color:#3c1515;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;">You</div>
+    </div>`;
+  chatWin.insertAdjacentHTML('beforeend', userMsgHtml);
+  inputEl.value = '';
+  chatWin.scrollTop = chatWin.scrollHeight;
+
+  const loadingId = 'aiLoading_' + Date.now();
+  const loadingHtml = `
+    <div id="${loadingId}" style="display:flex;gap:10px;align-items:flex-start;">
+      <div style="width:28px;height:28px;border-radius:50%;background:#3c1515;color:#ffffff;display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0;">🤖</div>
+      <div style="background:#ffffff;border:1px solid #cbbba8;color:#8a7575;padding:10px 14px;border-radius:0 12px 12px 12px;font-size:0.82rem;font-style:italic;">
+        <i class="bi bi-cpu me-1 animate-spin"></i> Analyzing your issue details with AI...
+      </div>
+    </div>`;
+  chatWin.insertAdjacentHTML('beforeend', loadingHtml);
+  chatWin.scrollTop = chatWin.scrollHeight;
+
+  btnSend.disabled = true;
+
+  try {
+    const response = await fetch('../api/ai_chat_reporter.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: msg })
+    });
+    const resData = await response.json();
+    document.getElementById(loadingId)?.remove();
+
+    if (resData.success && resData.data) {
+      currentAiData = resData.data;
+
+      const aiReplyHtml = `
+        <div style="display:flex;gap:10px;align-items:flex-start;">
+          <div style="width:28px;height:28px;border-radius:50%;background:#3c1515;color:#ffffff;display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0;">🤖</div>
+          <div style="background:#ffffff;border:1px solid #cbbba8;color:#2b0d0d;padding:10px 14px;border-radius:0 12px 12px 12px;font-size:0.82rem;line-height:1.5;max-width:85%;">
+            I've extracted the ticket details! Please review the structured summary below and click <b>Confirm & Create Ticket</b>.
+          </div>
+        </div>`;
+      chatWin.insertAdjacentHTML('beforeend', aiReplyHtml);
+
+      document.getElementById('aiSummaryTitle').innerText = currentAiData.title;
+      document.getElementById('aiSummaryLocation').innerText = currentAiData.location;
+      document.getElementById('aiSummaryCategory').innerText = currentAiData.category_name;
+      document.getElementById('aiSummaryDescription').innerText = currentAiData.description;
+      document.getElementById('aiPriorityBadge').innerText = (currentAiData.priority || 'medium').toUpperCase() + ' PRIORITY';
+
+      document.getElementById('aiSummaryCard').style.display = 'block';
+    } else {
+      const errHtml = `
+        <div style="display:flex;gap:10px;align-items:flex-start;">
+          <div style="width:28px;height:28px;border-radius:50%;background:#3c1515;color:#ffffff;display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0;">🤖</div>
+          <div style="background:#fff2f2;border:1px solid #fecaca;color:#991b1b;padding:10px 14px;border-radius:0 12px 12px 12px;font-size:0.82rem;">
+            ${resData.error || 'Could not parse issue details. Please try again or use the standard form.'}
+          </div>
+        </div>`;
+      chatWin.insertAdjacentHTML('beforeend', errHtml);
+    }
+  } catch (err) {
+    document.getElementById(loadingId)?.remove();
+    console.error(err);
+  } finally {
+    btnSend.disabled = false;
+    chatWin.scrollTop = chatWin.scrollHeight;
+  }
+}
+
+function confirmAndCreateTicket() {
+  if (!currentAiData) return;
+
+  document.getElementById('title').value = currentAiData.title || '';
+  document.getElementById('description').value = currentAiData.description || '';
+  document.getElementById('location').value = currentAiData.location || '';
+  
+  if (currentAiData.category_id) {
+    document.getElementById('category_id').value = currentAiData.category_id;
+  }
+  if (currentAiData.priority) {
+    document.getElementById('priority').value = currentAiData.priority.toLowerCase();
+  }
+
+  const form = document.querySelector('form');
+  form.submit();
+}
+
+function editAiDetails() {
+  if (!currentAiData) return;
+
+  document.getElementById('title').value = currentAiData.title || '';
+  document.getElementById('description').value = currentAiData.description || '';
+  document.getElementById('location').value = currentAiData.location || '';
+  if (currentAiData.category_id) {
+    document.getElementById('category_id').value = currentAiData.category_id;
+  }
+  if (currentAiData.priority) {
+    document.getElementById('priority').value = currentAiData.priority.toLowerCase();
+  }
+
+  switchReportMode('standard');
+}
+
+function escapeHtml(text) {
+  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+  return String(text).replace(/[&<>"']/g, m => map[m]);
+}
+
 function previewImages(input){
   const preview=document.getElementById('imgPreview');preview.innerHTML='';
   Array.from(input.files).slice(0,5).forEach(file=>{
