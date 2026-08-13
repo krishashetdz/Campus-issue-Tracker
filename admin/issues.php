@@ -7,7 +7,7 @@ requireRole('admin');
 $u=currentUser();
 $msg=$err='';
 $sf=trim($_GET['status']??'');$pf=trim($_GET['priority']??'');$search=trim($_GET['search']??'');
-$where=['1=1'];$params=[];
+$where=['i.parent_id IS NULL'];$params=[];
 if($sf){$where[]="i.status=?";$params[]=$sf;}
 if($pf){$where[]="i.priority=?";$params[]=$pf;}
 if($search){$where[]="(i.title LIKE ? OR i.location LIKE ? OR u.full_name LIKE ?)";$params[]="%$search%";$params[]="%$search%";$params[]="%$search%";}

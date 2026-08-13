@@ -52,13 +52,13 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     logStatusChange($pdo,$issue_id,$u['id'],'','pending','Issue submitted by '.$u['name']);
     
     // Automated Duplicate Complaint Detection & Incident Clustering
-    $duplicateCheck = $pdo->prepare("SELECT issue_id, parent_id, is_parent FROM issues WHERE category_id = ? AND LOWER(location) = LOWER(?) AND status IN ('pending','in_progress') AND issue_id != ? AND created_at >= NOW() - INTERVAL 24 HOUR ORDER BY created_at ASC LIMIT 1");
+    $duplicateCheck = $pdo->prepare("SELECT issue_id, parent_id, is_parent FROM issues WHERE category_id = ? AND LOWER(location) = LOWER(?) AND status IN ('pending','in_progress') AND parent_id IS NULL AND issue_id != ? AND created_at >= NOW() - INTERVAL 24 HOUR ORDER BY issue_id ASC LIMIT 1");
     $duplicateCheck->execute([$category_id, $location, $issue_id]);
     $activeMatch = $duplicateCheck->fetch();
 
     $mergedParentId = null;
     if ($activeMatch) {
-      $mergedParentId = $activeMatch['parent_id'] ? $activeMatch['parent_id'] : $activeMatch['issue_id'];
+      $mergedParentId = $activeMatch['issue_id'];
       
       // Set child report's parent_id
       $pdo->prepare("UPDATE issues SET parent_id = ? WHERE issue_id = ?")->execute([$mergedParentId, $issue_id]);
@@ -173,6 +173,25 @@ $pageTitle='Report an Issue';$pageSubtitle='Submit a campus problem for resoluti
       <form method="POST" enctype="multipart/form-data">
         <div style="display:grid;grid-template-columns:1fr 260px;gap:14px;">
           <div>
+            <!-- Multi-Language Voice Dictation Bar -->
+            <div style="background:var(--cream);border:1px solid rgba(74,14,23,0.15);border-radius:10px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <button type="button" id="btnVoiceRecord" onclick="toggleVoiceRecording()" style="background:#3c1515;color:#ffffff;border:none;padding:7px 14px;border-radius:8px;font-size:0.78rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.2s ease;">
+                  <i class="bi bi-mic-fill" id="micIcon" style="color:#cbbba8;"></i>
+                  <span id="micText">Speak & Auto-Fill</span>
+                </button>
+                <select id="voiceLangSelect" class="bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] text-xs rounded-md px-2.5 py-1.5 focus:outline-none focus:border-amber-700">
+                  <option value="en-IN">English</option>
+                  <option value="hi-IN">Hindi - हिन्दी</option>
+                  <option value="mr-IN">Marathi - मराठी</option>
+                  <option value="kok-IN">Konkani - कोंकणी</option>
+                </select>
+              </div>
+              <div id="voiceStatus" style="font-size:0.75rem;color:#8a7575;display:flex;align-items:center;gap:6px;">
+                <span><i class="bi bi-translate me-1"></i>Speak in your language — auto-translated & filled to form</span>
+              </div>
+            </div>
+
             <div class="panel">
               <div class="panel-header"><i class="bi bi-pencil-square me-2"></i>Issue Details</div>
               <div class="panel-body">
@@ -372,6 +391,123 @@ function editAiDetails() {
 function escapeHtml(text) {
   const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
   return String(text).replace(/[&<>"']/g, m => map[m]);
+}
+
+/* Multi-Language Voice Input & Speech Recognition */
+let recognition = null;
+let isRecording = false;
+
+function initSpeechRecognition() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert('Web Speech API is not supported in your browser. Please use Chrome, Edge, or Safari.');
+    return null;
+  }
+  const rec = new SpeechRecognition();
+  rec.continuous = false;
+  rec.interimResults = false;
+
+  rec.onstart = function() {
+    isRecording = true;
+    const btn = document.getElementById('btnVoiceRecord');
+    const icon = document.getElementById('micIcon');
+    const text = document.getElementById('micText');
+    const status = document.getElementById('voiceStatus');
+
+    btn.style.background = '#dc2626';
+    btn.style.color = '#ffffff';
+    icon.className = 'bi bi-record-fill animate-pulse';
+    icon.style.color = '#ffffff';
+    text.innerText = 'Listening...';
+    status.innerHTML = '<span style="color:#dc2626;font-weight:600;"><i class="bi bi-soundwave me-1 animate-pulse"></i> Recording live audio...</span>';
+  };
+
+  rec.onresult = async function(event) {
+    const transcript = event.results[0][0].transcript;
+    const langSelect = document.getElementById('voiceLangSelect').value;
+
+    const status = document.getElementById('voiceStatus');
+    status.innerHTML = '<span style="color:#b45309;font-weight:600;"><i class="bi bi-cpu me-1 animate-spin"></i> Translating to English & extracting fields...</span>';
+
+    try {
+      const response = await fetch('../api/translate_voice_report.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ raw_text: transcript, language: langSelect })
+      });
+      const resData = await response.json();
+
+      if (resData.success && resData.data) {
+        const data = resData.data;
+
+        // Auto-fill form fields
+        document.getElementById('title').value = data.title || transcript;
+        document.getElementById('description').value = data.description || data.translated_text || transcript;
+        document.getElementById('location').value = data.location || '';
+        
+        if (data.category_id) {
+          document.getElementById('category_id').value = data.category_id;
+        }
+        if (data.priority) {
+          document.getElementById('priority').value = data.priority.toLowerCase();
+        }
+
+        status.innerHTML = `<span style="color:#059669;font-weight:600;"><i class="bi bi-check-circle-fill me-1"></i> Auto-filled form! Translated: "${escapeHtml(data.title)}"</span>`;
+      } else {
+        status.innerHTML = `<span style="color:#dc2626;font-weight:600;">Translation failed: ${resData.error || 'Unknown error'}</span>`;
+      }
+    } catch (err) {
+      console.error(err);
+      status.innerHTML = '<span style="color:#dc2626;font-weight:600;">Error processing translation request.</span>';
+    } finally {
+      resetVoiceBtn();
+    }
+  };
+
+  rec.onerror = function(event) {
+    console.error('Speech recognition error:', event.error);
+    const status = document.getElementById('voiceStatus');
+    status.innerHTML = `<span style="color:#dc2626;font-weight:600;">Mic Error: ${event.error}</span>`;
+    resetVoiceBtn();
+  };
+
+  rec.onend = function() {
+    if (isRecording) {
+      resetVoiceBtn();
+    }
+  };
+
+  return rec;
+}
+
+function resetVoiceBtn() {
+  isRecording = false;
+  const btn = document.getElementById('btnVoiceRecord');
+  const icon = document.getElementById('micIcon');
+  const text = document.getElementById('micText');
+
+  if (btn) {
+    btn.style.background = '#3c1515';
+    btn.style.color = '#ffffff';
+    icon.className = 'bi bi-mic-fill';
+    icon.style.color = '#cbbba8';
+    text.innerText = 'Speak & Auto-Fill';
+  }
+}
+
+function toggleVoiceRecording() {
+  if (!recognition) {
+    recognition = initSpeechRecognition();
+  }
+  if (!recognition) return;
+
+  if (isRecording) {
+    recognition.stop();
+  } else {
+    const selectedLang = document.getElementById('voiceLangSelect').value;
+    recognition.lang = (selectedLang === 'kok-IN') ? 'hi-IN' : selectedLang;
+    recognition.start();
+  }
 }
 
 function previewImages(input){

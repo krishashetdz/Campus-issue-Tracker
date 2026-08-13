@@ -6,13 +6,13 @@ require_once '../includes/notification_helper.php';
 requireRole('admin');
 $u=currentUser();
 foreach(['pending','in_progress','resolved','closed','rejected'] as $s){
-  $st=$pdo->prepare("SELECT COUNT(*) FROM issues WHERE status=?");$st->execute([$s]);$stats[$s]=$st->fetchColumn();
+  $st=$pdo->prepare("SELECT COUNT(*) FROM issues WHERE status=? AND parent_id IS NULL");$st->execute([$s]);$stats[$s]=$st->fetchColumn();
 }
-$stats['total']=$pdo->query("SELECT COUNT(*) FROM issues")->fetchColumn();
+$stats['total']=$pdo->query("SELECT COUNT(*) FROM issues WHERE parent_id IS NULL")->fetchColumn();
 $totalUsers=$pdo->query("SELECT COUNT(*) FROM users WHERE role IN ('student','staff')")->fetchColumn();
-$criticalOpen=$pdo->query("SELECT COUNT(*) FROM issues WHERE priority='critical' AND status NOT IN ('resolved','closed')")->fetchColumn();
-$recent=$pdo->query("SELECT i.*,c.category_name,u.full_name AS reporter FROM issues i LEFT JOIN categories c ON i.category_id=c.category_id LEFT JOIN users u ON i.reported_by=u.user_id ORDER BY i.created_at DESC LIMIT 7")->fetchAll();
-$catStats=$pdo->query("SELECT c.category_name,COUNT(i.issue_id) as cnt FROM categories c LEFT JOIN issues i ON i.category_id=c.category_id GROUP BY c.category_id ORDER BY cnt DESC LIMIT 6")->fetchAll();
+$criticalOpen=$pdo->query("SELECT COUNT(*) FROM issues WHERE priority='critical' AND status NOT IN ('resolved','closed') AND parent_id IS NULL")->fetchColumn();
+$recent=$pdo->query("SELECT i.*,c.category_name,u.full_name AS reporter FROM issues i LEFT JOIN categories c ON i.category_id=c.category_id LEFT JOIN users u ON i.reported_by=u.user_id WHERE i.parent_id IS NULL ORDER BY i.created_at DESC LIMIT 7")->fetchAll();
+$catStats=$pdo->query("SELECT c.category_name,COUNT(i.issue_id) as cnt FROM categories c LEFT JOIN issues i ON i.category_id=c.category_id AND i.parent_id IS NULL GROUP BY c.category_id ORDER BY cnt DESC LIMIT 6")->fetchAll();
 $pageTitle='Dashboard';$pageSubtitle='System overview';
 ?><!DOCTYPE html>
 <html lang="en">
@@ -20,6 +20,7 @@ $pageTitle='Dashboard';$pageSubtitle='System overview';
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Admin Dashboard – FixMyCampus</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
@@ -45,7 +46,23 @@ $pageTitle='Dashboard';$pageSubtitle='System overview';
             <?php foreach($recent as $r):?>
             <tr>
               <td><span class="issue-id">#<?=$r['issue_id']?></span></td>
-              <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;"><?=htmlspecialchars($r['title'])?></td>
+              <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;">
+                <?=htmlspecialchars($r['title'])?>
+                <?php if(!empty($r['affected_count']) && $r['affected_count'] > 1): ?>
+                  <span class="inline-flex items-center gap-1 font-mono text-[10px] bg-amber-500/10 text-amber-600 border border-amber-500/20 px-1.5 py-0.5 rounded font-semibold ml-1">
+                    👥 <?=$r['affected_count']?> Affected
+                  </span>
+                <?php endif; ?>
+              </td>
+              <td class="text-muted"><?=htmlspecialchars($r['reporter'])?></td>
+              <td class="text-muted"><?=htmlspecialchars($r['category_name']??'—')?></td>
+              <td><?=getPriorityBadge($r['priority'])?></td>
+              <td><?=getStatusBadge($r['status'])?></td>
+              <td><a href="view_issue.php?id=<?=$r['issue_id']?>" class="btn-sm-icon"><i class="bi bi-eye"></i></a></td>
+            </tr>
+            <?php endforeach;?>
+            </tbody>
+          </table>
               <td class="text-muted"><?=htmlspecialchars($r['reporter'])?></td>
               <td class="text-muted"><?=htmlspecialchars($r['category_name']??'—')?></td>
               <td><?=getPriorityBadge($r['priority'])?></td>
