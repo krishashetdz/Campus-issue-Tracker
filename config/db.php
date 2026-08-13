@@ -175,6 +175,9 @@ try {
         if (!in_array('affected_count', $cols)) {
             $pdo->exec("ALTER TABLE issues ADD COLUMN affected_count INT(11) DEFAULT 1 AFTER is_parent");
         }
+        if (!in_array('reopen_count', $cols)) {
+            $pdo->exec("ALTER TABLE issues ADD COLUMN reopen_count INT(11) DEFAULT 0 AFTER affected_count");
+        }
     } catch (Exception $ex) {
         // Continue if columns exist or ALTER is restricted
     }

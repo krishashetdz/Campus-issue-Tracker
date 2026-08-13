@@ -51,6 +51,15 @@ $pageSubtitle = htmlspecialchars($issue['title']);
         <a href="my_issues.php" style="color:var(--text-muted);text-decoration:none;font-size:0.85rem;"><i class="bi bi-arrow-left me-1"></i>Back to My Issues</a>
       </div>
 
+      <?php if(isset($_SESSION['flash_success'])): ?>
+        <div class="alert-banner alert-success" style="margin-bottom:14px;"><i class="bi bi-check-circle me-2"></i><?= htmlspecialchars($_SESSION['flash_success']) ?></div>
+        <?php unset($_SESSION['flash_success']); ?>
+      <?php endif; ?>
+      <?php if(isset($_SESSION['flash_error'])): ?>
+        <div class="alert-banner alert-danger" style="margin-bottom:14px;"><i class="bi bi-exclamation-circle me-2"></i><?= htmlspecialchars($_SESSION['flash_error']) ?></div>
+        <?php unset($_SESSION['flash_error']); ?>
+      <?php endif; ?>
+
       <div style="display:grid;grid-template-columns:1fr 320px;gap:20px;">
 
         <!-- Left: Issue Details -->
@@ -201,7 +210,22 @@ $pageSubtitle = htmlspecialchars($issue['title']);
                   <i class="bi <?= $iconClass ?> status-badge-icon"></i>
                 </div>
                 <?= getStatusBadge($issue['status']) ?>
+                <?php if(!empty($issue['reopen_count']) && $issue['reopen_count'] > 0): ?>
+                  <div style="margin-top:8px;">
+                    <span class="inline-flex items-center gap-1 font-mono text-xs bg-rose-500/10 text-rose-600 border border-rose-500/20 px-2 py-0.5 rounded font-semibold">
+                      ⚠️ Re-opened (x<?= $issue['reopen_count'] ?>)
+                    </span>
+                  </div>
+                <?php endif; ?>
                 <div style="margin-top:12px;font-size:0.8rem;color:var(--text-muted);">Last updated: <?= timeAgo($issue['updated_at'] ?? $issue['created_at']) ?></div>
+
+                <?php if($issue['status'] === 'resolved'): ?>
+                  <div style="margin-top:14px;border-top:1px solid rgba(74,14,23,0.1);padding-top:12px;">
+                    <button type="button" onclick="openReopenModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-sans text-xs font-semibold px-3 py-2 rounded-md transition-colors shadow-none w-full flex items-center justify-center gap-1.5 cursor-pointer">
+                      <i class="bi bi-exclamation-triangle-fill"></i> Problem Not Fixed? Re-Open Issue
+                    </button>
+                  </div>
+                <?php endif; ?>
               </div>
             </div>
           </div>
@@ -222,5 +246,32 @@ $pageSubtitle = htmlspecialchars($issue['title']);
     </div>
   </div>
 </div>
+
+<!-- Re-Open Issue Modal -->
+<div id="reopenModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:#ffffff;border:1px solid #cbbba8;border-radius:12px;width:100%;max-width:440px;padding:20px;box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;border-bottom:1px solid rgba(74,14,23,0.1);padding-bottom:10px;">
+      <span style="font-weight:700;color:#3c1515;font-size:0.95rem;"><i class="bi bi-arrow-counterclockwise me-1.5"></i>Re-Open Issue #<?= $issue['issue_id'] ?></span>
+      <button type="button" onclick="closeReopenModal()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:#8a7575;">&times;</button>
+    </div>
+    <form action="reopen_issue.php" method="POST">
+      <input type="hidden" name="issue_id" value="<?= $issue['issue_id'] ?>">
+      <div style="margin-bottom:14px;">
+        <label style="display:block;font-size:0.8rem;font-weight:600;color:#3c1515;margin-bottom:6px;">Reason for Re-Opening *</label>
+        <textarea name="reason" rows="3" required placeholder="Describe why the problem is not resolved (e.g. 'Light is still flickering', 'AC is still leaking water')..." class="bg-[#f8f6f0] border border-[#d4c8b8] text-[#2b0d0d] placeholder-[#8a7575] text-xs rounded-md px-3 py-2 focus:outline-none focus:border-amber-700 w-full"></textarea>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;">
+        <button type="button" onclick="closeReopenModal()" style="background:transparent;border:1px solid #cbbba8;color:#3c1515;font-size:0.8rem;font-weight:600;padding:8px 14px;border-radius:6px;cursor:pointer;">Cancel</button>
+        <button type="submit" style="background:#3c1515;border:none;color:#ffffff;font-size:0.8rem;font-weight:600;padding:8px 16px;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:6px;">
+          <i class="bi bi-send-fill" style="color:#cbbba8;"></i> Submit Re-Open Request
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+<script>
+function openReopenModal() { document.getElementById('reopenModal').style.display = 'flex'; }
+function closeReopenModal() { document.getElementById('reopenModal').style.display = 'none'; }
+</script>
 </body>
 </html>

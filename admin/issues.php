@@ -119,6 +119,13 @@ $pageTitle='All Issues';$pageSubtitle='Manage and assign campus issues';
                 <td><span class="issue-id">#<?=$iss['issue_id']?></span></td>
                 <td style="max-width:240px;">
                   <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><?=htmlspecialchars($iss['title'])?></div>
+                  <?php if(!empty($iss['reopen_count']) && $iss['reopen_count']>0):?>
+                    <div style="margin-top:2px;">
+                      <span class="inline-flex items-center gap-1 font-mono text-xs bg-rose-500/10 text-rose-600 border border-rose-500/20 px-2 py-0.5 rounded font-semibold">
+                        ⚠️ Re-opened (x<?=$iss['reopen_count']?>)
+                      </span>
+                    </div>
+                  <?php endif;?>
                   <?php if(!empty($iss['is_parent']) || !empty($iss['affected_count']) && $iss['affected_count']>1):?>
                     <div style="margin-top:2px;">
                       <span class="inline-flex items-center gap-1 font-mono text-xs bg-amber-500/10 text-amber-600 border border-amber-500/20 px-2 py-0.5 rounded font-semibold">

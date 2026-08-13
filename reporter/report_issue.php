@@ -467,7 +467,15 @@ function initSpeechRecognition() {
   rec.onerror = function(event) {
     console.error('Speech recognition error:', event.error);
     const status = document.getElementById('voiceStatus');
-    status.innerHTML = `<span style="color:#dc2626;font-weight:600;">Mic Error: ${event.error}</span>`;
+    if (event.error === 'network') {
+      status.innerHTML = '<span style="color:#dc2626;font-weight:600;"><i class="bi bi-wifi-off me-1"></i> Speech service network error. <button type="button" onclick="promptManualSpeechText()" style="text-decoration:underline;margin-left:4px;cursor:pointer;background:none;border:none;color:#3c1515;font-weight:700;">Click to paste/type voice transcript</button></span>';
+    } else if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+      status.innerHTML = '<span style="color:#dc2626;font-weight:600;"><i class="bi bi-mic-mute me-1"></i> Mic access denied. Please allow microphone permissions in your browser.</span>';
+    } else if (event.error === 'no-speech') {
+      status.innerHTML = '<span style="color:#b45309;font-weight:600;"><i class="bi bi-volume-mute me-1"></i> No speech detected. Speak clearly into your mic and try again.</span>';
+    } else {
+      status.innerHTML = `<span style="color:#dc2626;font-weight:600;">Mic Error: ${event.error}</span>`;
+    }
     resetVoiceBtn();
   };
 
@@ -478,6 +486,40 @@ function initSpeechRecognition() {
   };
 
   return rec;
+}
+
+function promptManualSpeechText() {
+  const userText = prompt("Enter or paste your issue speech description (Hindi, Marathi, Konkani, English):");
+  if (!userText || !userText.trim()) return;
+
+  const langSelect = document.getElementById('voiceLangSelect').value;
+  const status = document.getElementById('voiceStatus');
+  status.innerHTML = '<span style="color:#b45309;font-weight:600;"><i class="bi bi-cpu me-1 animate-spin"></i> Translating to English & extracting fields...</span>';
+
+  fetch('../api/translate_voice_report.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ raw_text: userText.trim(), language: langSelect })
+  })
+  .then(res => res.json())
+  .then(resData => {
+    if (resData.success && resData.data) {
+      const data = resData.data;
+      document.getElementById('title').value = data.title || userText;
+      document.getElementById('description').value = data.description || data.translated_text || userText;
+      document.getElementById('location').value = data.location || '';
+      if (data.category_id) document.getElementById('category_id').value = data.category_id;
+      if (data.priority) document.getElementById('priority').value = data.priority.toLowerCase();
+
+      status.innerHTML = `<span style="color:#059669;font-weight:600;"><i class="bi bi-check-circle-fill me-1"></i> Auto-filled form! Translated: "${escapeHtml(data.title)}"</span>`;
+    } else {
+      status.innerHTML = `<span style="color:#dc2626;font-weight:600;">Translation failed: ${resData.error || 'Unknown error'}</span>`;
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    status.innerHTML = '<span style="color:#dc2626;font-weight:600;">Error processing translation request.</span>';
+  });
 }
 
 function resetVoiceBtn() {
@@ -504,8 +546,15 @@ function toggleVoiceRecording() {
   if (isRecording) {
     recognition.stop();
   } else {
-    const selectedLang = document.getElementById('voiceLangSelect').value;
-    recognition.lang = (selectedLang === 'kok-IN') ? 'hi-IN' : selectedLang;
+    const selectedLangSelect = document.getElementById('voiceLangSelect');
+    const selectedVal = selectedLangSelect.value;
+    // Map speech locales to supported Google BCP-47 speech tags (en-IN, hi-IN, mr-IN)
+    let speechLocale = 'en-IN';
+    if (selectedVal === 'hi-IN') speechLocale = 'hi-IN';
+    else if (selectedVal === 'mr-IN') speechLocale = 'mr-IN';
+    else if (selectedVal === 'kok-IN') speechLocale = 'hi-IN'; // Fallback audio engine locale for Konkani
+
+    recognition.lang = speechLocale;
     recognition.start();
   }
 }
