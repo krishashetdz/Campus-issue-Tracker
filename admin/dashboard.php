@@ -19,9 +19,9 @@ $criticalOpen = $pdo->query("SELECT COUNT(*) FROM issues WHERE priority='critica
 
 $recent = $pdo->query("SELECT i.*,c.category_name,u.full_name AS reporter FROM issues i LEFT JOIN categories c ON i.category_id=c.category_id LEFT JOIN users u ON i.reported_by=u.user_id WHERE i.parent_id IS NULL ORDER BY i.created_at DESC LIMIT 7")->fetchAll();
 
-$catStats = $pdo->query("SELECT c.category_name,COUNT(i.issue_id) as cnt FROM categories c LEFT JOIN issues i ON i.category_id=c.category_id AND i.parent_id IS NULL GROUP BY c.category_id ORDER BY cnt DESC LIMIT 6")->fetchAll();
+$catStats = $pdo->query("SELECT c.category_name, COUNT(i.issue_id) as cnt FROM categories c LEFT JOIN issues i ON i.category_id=c.category_id AND i.parent_id IS NULL GROUP BY c.category_id, c.category_name ORDER BY cnt DESC LIMIT 6")->fetchAll();
 
-$hotspotStats = $pdo->query("SELECT location, COUNT(*) as cnt FROM issues WHERE status NOT IN ('resolved','closed','rejected') AND parent_id IS NULL GROUP BY LOWER(location) ORDER BY cnt DESC LIMIT 5")->fetchAll();
+$hotspotStats = $pdo->query("SELECT location, COUNT(*) as cnt FROM issues WHERE status NOT IN ('resolved','closed','rejected') AND parent_id IS NULL GROUP BY location ORDER BY cnt DESC LIMIT 5")->fetchAll();
 $totalHotspotCnt = array_sum(array_column($hotspotStats, 'cnt')) ?: 1;
 
 $pageTitle = 'Dashboard';
