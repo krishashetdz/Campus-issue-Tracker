@@ -303,3 +303,121 @@ select.form-control option{background:#ffffff;color:#2b0d0d}
 }
 .notif-mark-btn:hover{background:rgba(255,216,190,.22);color:var(--peach);border-color:var(--peach-dim)}
 
+/* ── STATUS CARD CIRCULAR BADGE & HIGH CONTRAST ICON STYLING ── */
+.status-badge-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  margin: 0 auto 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.status-badge-circle:hover {
+  transform: scale(1.04);
+}
+.status-badge-circle i,
+.status-badge-circle svg,
+.status-badge-icon {
+  font-size: 2.1rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1em;
+  height: 1em;
+}
+
+/* In Progress Theme (Purple) */
+.status-badge-circle.status-in_progress,
+.status-badge-circle.in_progress {
+  background-color: #f3e8ff !important;
+  border: 2px solid #7c3aed !important;
+  color: #6b21a8 !important;
+}
+.status-badge-circle.status-in_progress i,
+.status-badge-circle.status-in_progress svg,
+.status-badge-circle.in_progress i,
+.status-badge-circle.in_progress svg,
+.status-badge-circle.status-in_progress .status-badge-icon,
+.status-badge-circle.in_progress .status-badge-icon {
+  color: #6b21a8 !important;
+  fill: #6b21a8 !important;
+  stroke: #6b21a8 !important;
+}
+
+/* Pending Theme (Amber) */
+.status-badge-circle.status-pending,
+.status-badge-circle.pending {
+  background-color: #fef3c7 !important;
+  border: 2px solid #f59e0b !important;
+  color: #92400e !important;
+}
+.status-badge-circle.status-pending i,
+.status-badge-circle.status-pending svg,
+.status-badge-circle.pending i,
+.status-badge-circle.pending svg,
+.status-badge-circle.status-pending .status-badge-icon,
+.status-badge-circle.pending .status-badge-icon {
+  color: #92400e !important;
+  fill: #92400e !important;
+  stroke: #92400e !important;
+}
+
+/* Resolved Theme (Emerald) */
+.status-badge-circle.status-resolved,
+.status-badge-circle.resolved {
+  background-color: #d1fae5 !important;
+  border: 2px solid #10b981 !important;
+  color: #047857 !important;
+}
+.status-badge-circle.status-resolved i,
+.status-badge-circle.status-resolved svg,
+.status-badge-circle.resolved i,
+.status-badge-circle.resolved svg,
+.status-badge-circle.status-resolved .status-badge-icon,
+.status-badge-circle.resolved .status-badge-icon {
+  color: #047857 !important;
+  fill: #047857 !important;
+  stroke: #047857 !important;
+}
+
+/* Closed Theme (Slate) */
+.status-badge-circle.status-closed,
+.status-badge-circle.closed {
+  background-color: #f1f5f9 !important;
+  border: 2px solid #64748b !important;
+  color: #334155 !important;
+}
+.status-badge-circle.status-closed i,
+.status-badge-circle.status-closed svg,
+.status-badge-circle.closed i,
+.status-badge-circle.closed svg,
+.status-badge-circle.status-closed .status-badge-icon,
+.status-badge-circle.closed .status-badge-icon {
+  color: #334155 !important;
+  fill: #334155 !important;
+  stroke: #334155 !important;
+}
+
+/* Rejected Theme (Rose) */
+.status-badge-circle.status-rejected,
+.status-badge-circle.rejected {
+  background-color: #ffe4e6 !important;
+  border: 2px solid #ec4899 !important;
+  color: #be123c !important;
+}
+.status-badge-circle.status-rejected i,
+.status-badge-circle.status-rejected svg,
+.status-badge-circle.rejected i,
+.status-badge-circle.rejected svg,
+.status-badge-circle.status-rejected .status-badge-icon,
+.status-badge-circle.rejected .status-badge-icon {
+  color: #be123c !important;
+  fill: #be123c !important;
+  stroke: #be123c !important;
+}
+
+

@@ -145,7 +145,31 @@ $pageTitle='Update Issue #'.$id; $pageSubtitle=htmlspecialchars($issue['title'])
             <div style="font-weight:700;margin-bottom:6px;">Issue <?= ucfirst($issue['status']) ?></div>
             <div style="font-size:0.82rem;color:var(--text-muted);">This issue has been closed. No further action required.</div>
           </div></div>
-          <?php endif; ?>
+          <!-- Issue Status Card -->
+          <div class="panel fade-in-up">
+            <div class="panel-header"><i class="bi bi-info-circle me-2"></i>Issue Status</div>
+            <div class="panel-body">
+              <div style="text-align:center;padding:20px 0;">
+                <?php 
+                $st = $issue['status'] ?? 'pending';
+                $statusIconMap = [
+                  'pending'     => 'bi-hourglass-split',
+                  'in_progress' => 'bi-wrench',
+                  'resolved'    => 'bi-check-circle-fill',
+                  'closed'      => 'bi-lock-fill',
+                  'rejected'    => 'bi-x-circle-fill'
+                ];
+                $iconClass = $statusIconMap[$st] ?? 'bi-info-circle-fill';
+                ?>
+                <div class="status-badge-circle status-<?= htmlspecialchars($st) ?>">
+                  <i class="bi <?= $iconClass ?> status-badge-icon"></i>
+                </div>
+                <?= getStatusBadge($issue['status']) ?>
+                <div style="margin-top:12px;font-size:0.8rem;color:var(--text-muted);">Last updated: <?= timeAgo($issue['updated_at'] ?? $issue['created_at']) ?></div>
+              </div>
+            </div>
+          </div>
+
           <div class="panel"><div class="panel-header"><i class="bi bi-info-circle me-2"></i>Issue Details</div>
             <div class="panel-body" style="font-size:0.82rem;color:var(--text-muted);line-height:2;">
               <div><b style="color:var(--text-primary);">Issue ID:</b> #<?= $id ?></div>

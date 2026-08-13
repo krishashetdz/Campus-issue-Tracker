@@ -169,9 +169,19 @@ $pageSubtitle = htmlspecialchars($issue['title']);
             <div class="panel-header"><i class="bi bi-info-circle me-2"></i>Issue Status</div>
             <div class="panel-body">
               <div style="text-align:center;padding:20px 0;">
-                <?php $sc = $statusColors[$issue['status']] ?? '#64748b'; ?>
-                <div style="width:70px;height:70px;border-radius:50%;background:<?= $sc ?>22;border:3px solid <?= $sc ?>;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;">
-                  <?= ['pending'=>'⏳','in_progress'=>'🔧','resolved'=>'✅','closed'=>'🔒','rejected'=>'❌'][$issue['status']] ?? '📋' ?>
+                <?php 
+                $st = $issue['status'] ?? 'pending';
+                $statusIconMap = [
+                  'pending'     => 'bi-hourglass-split',
+                  'in_progress' => 'bi-wrench',
+                  'resolved'    => 'bi-check-circle-fill',
+                  'closed'      => 'bi-lock-fill',
+                  'rejected'    => 'bi-x-circle-fill'
+                ];
+                $iconClass = $statusIconMap[$st] ?? 'bi-info-circle-fill';
+                ?>
+                <div class="status-badge-circle status-<?= htmlspecialchars($st) ?>">
+                  <i class="bi <?= $iconClass ?> status-badge-icon"></i>
                 </div>
                 <?= getStatusBadge($issue['status']) ?>
                 <div style="margin-top:12px;font-size:0.8rem;color:var(--text-muted);">Last updated: <?= timeAgo($issue['updated_at'] ?? $issue['created_at']) ?></div>
