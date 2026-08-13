@@ -62,3 +62,34 @@ function timeAgo($datetime) {
     if ($diff < 604800) return floor($diff/86400) . ' days ago';
     return date('d M Y', $time);
 }
+
+function getSlaBadge($createdAt, $priority, $status) {
+    if (in_array($status, ['resolved', 'closed', 'rejected'])) {
+        return '<span class="inline-flex items-center gap-1 font-mono text-xs bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 px-2 py-0.5 rounded font-medium">✅ SLA Met</span>';
+    }
+
+    $hoursMap = [
+        'critical' => 4,
+        'high'     => 24,
+        'medium'   => 48,
+        'low'      => 72
+    ];
+    $targetHours = $hoursMap[strtolower($priority)] ?? 48;
+    $createdTime = strtotime($createdAt);
+    $targetTime  = $createdTime + ($targetHours * 3600);
+    $diff = $targetTime - time();
+
+    if ($diff > 0) {
+        $hrs = floor($diff / 3600);
+        $mins = floor(($diff % 3600) / 60);
+        $timeStr = ($hrs > 0 ? "{$hrs}h " : "") . "{$mins}m left";
+        $badgeClass = ($hrs < 2) ? "bg-amber-500/10 text-amber-600 border-amber-500/20" : "bg-emerald-500/10 text-emerald-600 border-emerald-500/20";
+        return "<span class=\"inline-flex items-center gap-1 font-mono text-xs {$badgeClass} border px-2 py-0.5 rounded font-semibold\"><i class=\"bi bi-stopwatch\"></i> ⏱️ {$timeStr}</span>";
+    } else {
+        $absDiff = abs($diff);
+        $hrs = floor($absDiff / 3600);
+        $mins = floor(($absDiff % 3600) / 60);
+        $timeStr = ($hrs > 0 ? "{$hrs}h " : "") . "{$mins}m";
+        return "<span class=\"inline-flex items-center gap-1 font-mono text-xs bg-rose-500/10 text-rose-600 border border-rose-500/20 px-2 py-0.5 rounded font-bold animate-pulse\"><i class=\"bi bi-exclamation-triangle-fill\"></i> 🚨 SLA Overdue by {$timeStr}</span>";
+    }
+}

@@ -119,6 +119,9 @@ $pageTitle='All Issues';$pageSubtitle='Manage and assign campus issues';
                 <td><span class="issue-id">#<?=$iss['issue_id']?></span></td>
                 <td style="max-width:240px;">
                   <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><?=htmlspecialchars($iss['title'])?></div>
+                  <div style="margin-top:2px;">
+                    <?=getSlaBadge($iss['created_at'], $iss['priority'], $iss['status'])?>
+                  </div>
                   <?php if(!empty($iss['reopen_count']) && $iss['reopen_count']>0):?>
                     <div style="margin-top:2px;">
                       <span class="inline-flex items-center gap-1 font-mono text-xs bg-rose-500/10 text-rose-600 border border-rose-500/20 px-2 py-0.5 rounded font-semibold">

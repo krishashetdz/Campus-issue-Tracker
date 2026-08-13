@@ -131,7 +131,11 @@ $pageTitle = 'Issue #'.$id.' – Admin View'; $pageSubtitle = htmlspecialchars($
                   </span>
                 <?php endif; ?>
               </div>
-              <div style="display:flex;gap:8px;"><?= getPriorityBadge($issue['priority']) ?><?= getStatusBadge($issue['status']) ?></div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <?= getSlaBadge($issue['created_at'], $issue['priority'], $issue['status']) ?>
+                <?= getPriorityBadge($issue['priority']) ?>
+                <?= getStatusBadge($issue['status']) ?>
+              </div>
             </div>
             <div class="panel-body">
               <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:18px;">
