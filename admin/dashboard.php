@@ -24,6 +24,27 @@ $catStats = $pdo->query("SELECT c.category_name, COUNT(i.issue_id) as cnt FROM c
 $hotspotStats = $pdo->query("SELECT location, COUNT(*) as cnt FROM issues WHERE status NOT IN ('resolved','closed','rejected') AND parent_id IS NULL GROUP BY location ORDER BY cnt DESC LIMIT 5")->fetchAll();
 $totalHotspotCnt = array_sum(array_column($hotspotStats, 'cnt')) ?: 1;
 
+// Monthly Trend Data Aggregation (Last 6 Rolling Months: Mar 2026 - Aug 2026)
+$stmt = $pdo->query("
+    SELECT DATE_FORMAT(created_at, '%Y-%m') AS month_key, 
+           COUNT(*) AS total 
+    FROM issues 
+    WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+    GROUP BY month_key 
+    ORDER BY month_key ASC
+");
+$db_monthly = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+
+$chart_labels = [];
+$chart_data = [];
+for ($i = 5; $i >= 0; $i--) {
+    $time = strtotime("first day of -$i month");
+    $key = date('Y-m', $time);
+    $label = date('M Y', $time); // e.g. "Mar 2026"
+    $chart_labels[] = $label;
+    $chart_data[] = isset($db_monthly[$key]) ? (int)$db_monthly[$key] : 0;
+}
+
 $pageTitle = 'Dashboard';
 $pageSubtitle = 'System overview';
 ?><!DOCTYPE html>
@@ -34,6 +55,7 @@ $pageSubtitle = 'System overview';
 <title>Admin Dashboard – FixMyCampus</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
@@ -52,41 +74,54 @@ $pageSubtitle = 'System overview';
       </div>
 
       <div style="display:grid;grid-template-columns:1fr 260px;gap:14px;">
-        <div class="panel">
-          <div class="panel-header"><span><i class="bi bi-journal-text me-2"></i>Recent Issues</span><a href="issues.php">View all</a></div>
-          <table class="table-dark-custom">
-            <thead>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <!-- Recent Issues Table -->
+          <div class="panel">
+            <div class="panel-header"><span><i class="bi bi-journal-text me-2"></i>Recent Issues</span><a href="issues.php">View all</a></div>
+            <table class="table-dark-custom">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Title</th>
+                  <th>Reporter</th>
+                  <th>Category</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+              <?php foreach($recent as $r): ?>
               <tr>
-                <th>#</th>
-                <th>Title</th>
-                <th>Reporter</th>
-                <th>Category</th>
-                <th>Priority</th>
-                <th>Status</th>
-                <th></th>
+                <td><span class="issue-id">#<?=$r['issue_id']?></span></td>
+                <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;">
+                  <?=htmlspecialchars($r['title'])?>
+                  <?php if(!empty($r['affected_count']) && $r['affected_count'] > 1): ?>
+                    <span class="inline-flex items-center gap-1 font-mono text-[10px] bg-amber-500/10 text-amber-600 border border-amber-500/20 px-1.5 py-0.5 rounded font-semibold ml-1">
+                      👥 <?=$r['affected_count']?> Affected
+                    </span>
+                  <?php endif; ?>
+                </td>
+                <td class="text-muted"><?=htmlspecialchars($r['reporter'] ?? 'Unknown')?></td>
+                <td class="text-muted"><?=htmlspecialchars($r['category_name'] ?? '—')?></td>
+                <td><?=getPriorityBadge($r['priority'])?></td>
+                <td><?=getStatusBadge($r['status'])?></td>
+                <td><a href="view_issue.php?id=<?=$r['issue_id']?>" class="btn-sm-icon"><i class="bi bi-eye"></i></a></td>
               </tr>
-            </thead>
-            <tbody>
-            <?php foreach($recent as $r): ?>
-            <tr>
-              <td><span class="issue-id">#<?=$r['issue_id']?></span></td>
-              <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;">
-                <?=htmlspecialchars($r['title'])?>
-                <?php if(!empty($r['affected_count']) && $r['affected_count'] > 1): ?>
-                  <span class="inline-flex items-center gap-1 font-mono text-[10px] bg-amber-500/10 text-amber-600 border border-amber-500/20 px-1.5 py-0.5 rounded font-semibold ml-1">
-                    👥 <?=$r['affected_count']?> Affected
-                  </span>
-                <?php endif; ?>
-              </td>
-              <td class="text-muted"><?=htmlspecialchars($r['reporter'] ?? 'Unknown')?></td>
-              <td class="text-muted"><?=htmlspecialchars($r['category_name'] ?? '—')?></td>
-              <td><?=getPriorityBadge($r['priority'])?></td>
-              <td><?=getStatusBadge($r['status'])?></td>
-              <td><a href="view_issue.php?id=<?=$r['issue_id']?>" class="btn-sm-icon"><i class="bi bi-eye"></i></a></td>
-            </tr>
-            <?php endforeach; ?>
-            </tbody>
-          </table>
+              <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Monthly Trend Chart Card -->
+          <div class="panel">
+            <div class="panel-header"><i class="bi bi-graph-up me-2"></i>Monthly Trend (Mar 2026 – Aug 2026)</div>
+            <div class="panel-body">
+              <div style="position:relative;height:220px;width:100%;">
+                <canvas id="dashboardMonthlyChart"></canvas>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div style="display:flex;flex-direction:column;gap:12px;">
@@ -148,5 +183,62 @@ $pageSubtitle = 'System overview';
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const ctx = document.getElementById('dashboardMonthlyChart');
+  if (ctx) {
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: <?= json_encode($chart_labels) ?>,
+        datasets: [{
+          label: 'Issues Reported',
+          data: <?= json_encode($chart_data) ?>,
+          backgroundColor: 'rgba(74, 14, 23, 0.85)',
+          borderColor: '#4A0E17',
+          borderWidth: 1.5,
+          borderRadius: 6,
+          hoverBackgroundColor: '#7B1E2B'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#4A0E17',
+            titleColor: '#FFD8BE',
+            bodyColor: '#FFFFFF',
+            padding: 10,
+            cornerRadius: 6
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+              color: '#2b0d0d',
+              font: { family: "'DM Sans', sans-serif", size: 11, weight: '600' }
+            },
+            grid: {
+              color: 'rgba(74, 14, 23, 0.08)'
+            }
+          },
+          x: {
+            ticks: {
+              color: '#2b0d0d',
+              font: { family: "'DM Sans', sans-serif", size: 11, weight: '600' }
+            },
+            grid: { display: false }
+          }
+        }
+      }
+    });
+  }
+});
+</script>
 </body>
 </html>

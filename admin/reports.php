@@ -22,27 +22,26 @@ $statusData = $pdo->query("SELECT status, COUNT(*) AS cnt FROM issues GROUP BY s
 // Issues by priority
 $priData = $pdo->query("SELECT priority, COUNT(*) AS cnt FROM issues GROUP BY priority ORDER BY FIELD(priority,'critical','high','medium','low')")->fetchAll();
 
-// Monthly issues (last 6 rolling months)
-$months = [];
+// Monthly issues (last 6 rolling months: Mar 2026 - Aug 2026)
+$stmt = $pdo->query("
+    SELECT DATE_FORMAT(created_at, '%Y-%m') AS month_key, 
+           COUNT(*) AS total 
+    FROM issues 
+    WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+    GROUP BY month_key 
+    ORDER BY month_key ASC
+");
+$db_monthly = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+
+$monthlyLabels = [];
+$monthlyCounts = [];
 for ($i = 5; $i >= 0; $i--) {
-    $monthKey   = date('Y-m', strtotime("-$i months"));
-    $monthLabel = date('M Y', strtotime("-$i months"));
-    $months[$monthKey] = [
-        'label' => $monthLabel,
-        'count' => 0
-    ];
+    $time = strtotime("first day of -$i month");
+    $key = date('Y-m', $time);
+    $label = date('M Y', $time); // e.g. "Mar 2026"
+    $monthlyLabels[] = $label;
+    $monthlyCounts[] = isset($db_monthly[$key]) ? (int)$db_monthly[$key] : 0;
 }
-
-$dbMonthly = $pdo->query("SELECT DATE_FORMAT(created_at, '%Y-%m') AS month_key, COUNT(*) AS total FROM issues WHERE created_at >= DATE_SUB(NOW(), INTERVAL 5 MONTH) GROUP BY month_key")->fetchAll();
-
-foreach ($dbMonthly as $row) {
-    if (isset($months[$row['month_key']])) {
-        $months[$row['month_key']]['count'] = (int)$row['total'];
-    }
-}
-
-$monthlyLabels = array_column($months, 'label');
-$monthlyCounts = array_column($months, 'count');
 
 // Top reporters
 $topReporters = $pdo->query("SELECT u.full_name, u.role, COUNT(i.issue_id) AS cnt FROM users u LEFT JOIN issues i ON i.reported_by=u.user_id GROUP BY u.user_id ORDER BY cnt DESC LIMIT 5")->fetchAll();
