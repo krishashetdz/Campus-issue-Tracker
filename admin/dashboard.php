@@ -24,26 +24,31 @@ $catStats = $pdo->query("SELECT c.category_name, COUNT(i.issue_id) as cnt FROM c
 $hotspotStats = $pdo->query("SELECT location, COUNT(*) as cnt FROM issues WHERE status NOT IN ('resolved','closed','rejected') AND parent_id IS NULL GROUP BY location ORDER BY cnt DESC LIMIT 5")->fetchAll();
 $totalHotspotCnt = array_sum(array_column($hotspotStats, 'cnt')) ?: 1;
 
-// Monthly Trend Data Aggregation (Last 6 Rolling Months: Mar 2026 - Aug 2026)
-$stmt = $pdo->query("
-    SELECT DATE_FORMAT(created_at, '%Y-%m') AS month_key, 
-           COUNT(*) AS total 
-    FROM issues 
-    WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
-    GROUP BY month_key 
-    ORDER BY month_key ASC
-");
-$db_monthly = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
-
-$chart_labels = [];
+// Prepare 6-month timeline structure
+$months = [];
 $chart_data = [];
 for ($i = 5; $i >= 0; $i--) {
-    $time = strtotime("first day of -$i month");
-    $key = date('Y-m', $time);
-    $label = date('M Y', $time); // e.g. "Mar 2026"
-    $chart_labels[] = $label;
-    $chart_data[] = isset($db_monthly[$key]) ? (int)$db_monthly[$key] : 0;
+    $m_key = date('Y-m', strtotime("-$i months"));
+    $m_label = date('M Y', strtotime("-$i months"));
+    $months[$m_key] = $m_label;
+    $chart_data[$m_key] = 0;
 }
+
+// Aggregate counts from database
+$stmt = $pdo->query("
+    SELECT DATE_FORMAT(created_at, '%Y-%m') AS ym, COUNT(*) AS count
+    FROM issues
+    GROUP BY ym
+");
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    if (isset($chart_data[$row['ym']])) {
+        $chart_data[$row['ym']] = (int)$row['count'];
+    }
+}
+
+// Encode labels and data values for the Chart rendering component
+$chart_labels_json = json_encode(array_values($months));
+$chart_data_json = json_encode(array_values($chart_data));
 
 $pageTitle = 'Dashboard';
 $pageSubtitle = 'System overview';
@@ -191,10 +196,10 @@ document.addEventListener("DOMContentLoaded", function() {
     new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: <?= json_encode($chart_labels) ?>,
+        labels: <?= $chart_labels_json ?>,
         datasets: [{
           label: 'Issues Reported',
-          data: <?= json_encode($chart_data) ?>,
+          data: <?= $chart_data_json ?>,
           backgroundColor: 'rgba(74, 14, 23, 0.85)',
           borderColor: '#4A0E17',
           borderWidth: 1.5,
