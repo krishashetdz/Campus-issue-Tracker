@@ -4,9 +4,10 @@
 [![Hosted on Render](https://img.shields.io/badge/Hosted_on-Render-46E3B7?style=for-the-badge&logo=render&logoColor=black)](https://campus-issue-tracker-main.onrender.com)
 [![Cloud Storage](https://img.shields.io/badge/Cloud_Media-Cloudinary-3448C5?style=for-the-badge&logo=cloudinary&logoColor=white)](https://cloudinary.com/)
 [![PHP](https://img.shields.io/badge/PHP-8.2-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://www.php.net/)
+[![Gemini AI](https://img.shields.io/badge/Google_Gemini-1.5_Flash-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
 [![License](https://img.shields.io/badge/License-Proprietary_%2F_All_Rights_Reserved-red?style=for-the-badge)](#-license--proprietary-notice)
 
-> **A centralized, cloud-hosted platform for reporting, managing, and resolving campus facility issues.** Fully deployed on **Render** with **Cloudinary** media storage.
+> **A centralized, cloud-hosted platform for reporting, managing, and resolving campus facility issues.** Fully deployed on **Render** with **Cloudinary** media storage and **Google Gemini AI** integration.
 
 ---
 
@@ -52,6 +53,67 @@ The application is deployed on **Render Cloud** and utilizes **Cloudinary** for 
 
 ---
 
+## 🔄 Issue Lifecycle Flowchart
+
+```mermaid
+graph TD
+    A["📝 Student / Staff Reports Issue<br><i>(Attaches Cloudinary Photos & AI Input)</i>"] --> B["⏳ Status: PENDING<br><i>(Admin Dashboard Alert Triggered)</i>"]
+    B --> C{"🛡️ Admin Triage & Review"}
+    C -->|"Assign Staff"| D["⚙️ Status: IN PROGRESS<br><i>(Dispatched to Maintenance / IT Dept)</i>"]
+    C -->|"Invalid / Duplicate"| X["❌ Status: REJECTED<br><i>(Reporter Notified with Reason)</i>"]
+    D --> E["🔧 Technician Executes Field Work<br><i>(Logs Progress Notes)</i>"]
+    E --> F["✅ Status: RESOLVED<br><i>(Technician Submits Resolution Notes)</i>"]
+    F --> G{"🔍 Verification & Quality Check"}
+    G -->|"Repair Verified"| H["🔒 Status: CLOSED<br><i>(Ticket Archived Successfully)</i>"]
+    G -->|"Fault Persists"| I["🔄 Status: REOPENED<br><i>(Reporter Flags Incomplete Repair)</i>"]
+    I --> D
+
+    classDef pending fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f;
+    classDef progress fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e3a8a;
+    classDef resolved fill:#d1fae5,stroke:#059669,stroke-width:2px,color:#064e3b;
+    classDef closed fill:#e0e7ff,stroke:#4338ca,stroke-width:2px,color:#312e81;
+    classDef rejected fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#7f1d1d;
+    classDef action fill:#1e293b,stroke:#00D4FF,stroke-width:2px,color:#ffffff;
+
+    class A,E action;
+    class B pending;
+    class D,I progress;
+    class F resolved;
+    class H closed;
+    class X rejected;
+```
+
+---
+
+## ☁️ Cloud System Architecture
+
+```mermaid
+flowchart LR
+    subgraph Users ["👥 Multi-Role Access"]
+        U1["🎓 Student / Staff<br><b>Reporter Portal</b>"]
+        U2["🔧 Maintenance Crew<br><b>Technician Board</b>"]
+        U3["🛡️ Administrator<br><b>Command Center</b>"]
+    end
+
+    subgraph RenderPlatform ["☁️ Hosted on Render"]
+        App["🚀 <b>FixMyCampus Web Application</b><br>PHP 8.2 • Apache • RBAC Middleware"]
+    end
+
+    subgraph CloudServices ["🌐 Integrated Cloud Services"]
+        CDN["📸 <b>Cloudinary CDN</b><br>Fast Image Upload & Media Delivery"]
+        AI["🤖 <b>Google Gemini 1.5</b><br>Voice Translation & NLP Extraction"]
+    end
+
+    U1 -->|"1. Submit Issues & Voice Reports"| App
+    U2 -->|"2. Update Progress & Resolve Tasks"| App
+    U3 -->|"3. Triage, Assign Staff & View Analytics"| App
+    
+    App <-->|"Upload / Retrieve Evidence Photos"| CDN
+    App <-->|"Translate Audio & Parse Chat"| AI
+```
+
+---
+
 ## ✨ Features by User Role
 
 ### 🎓 1. Students & Faculty (Reporters)
@@ -73,24 +135,6 @@ The application is deployed on **Render Cloud** and utilizes **Cloudinary** for 
 * **Duplicate Complaint Clustering:** Group duplicate student complaints under a primary ticket with aggregated affected counts.
 * **User & Role Management:** Manage registered accounts, departments, and access permissions.
 * **Analytical Trend Reports:** Visual monthly charts and resolution performance analytics.
-
----
-
-## 🔄 Issue Lifecycle Workflow
-
-```
-[ 1. Report Issue ] ──► [ 2. Admin Review & Triage ] ──► [ 3. Assign Staff ]
-  (Student / Staff)              (Admin Portal)              (Maintenance)
-                                                                  │
-[ 6. Verification & Close ] ◄── [ 5. Mark Resolved ] ◄─── [ 4. Work Execution ]
-      (Admin / Reporter)           (Technician)               (On Campus)
-```
-
-1. **Submission:** User submits an issue with details and photos (stored in Cloudinary).
-2. **Triage:** Administrator reviews urgency, checks for duplicates, and assigns a technician.
-3. **Execution:** Maintenance technician receives the work order, inspects the site, and logs progress.
-4. **Resolution:** Technician marks the task resolved with completion notes.
-5. **Closure:** Reporter and admin verify the fix, concluding the ticket lifecycle.
 
 ---
 
