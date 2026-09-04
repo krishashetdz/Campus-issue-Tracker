@@ -74,5 +74,8 @@ $_SERVER['PHP_SELF'] = $_SERVER['SCRIPT_NAME'];
 // Switch working directory to target file's directory so relative includes (e.g. '../config/db.php') resolve properly
 chdir(dirname($realTarget));
 
+// Ensure default response header is text/html for PHP pages
+header('Content-Type: text/html; charset=UTF-8');
+
 // Execute the requested PHP script
 require $realTarget;
