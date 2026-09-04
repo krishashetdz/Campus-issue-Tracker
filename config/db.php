@@ -3,11 +3,11 @@
  * FixMyCampus - Database Configuration
  * Reads environment variables on Render, or falls back to Aiven / XAMPP defaults
  */
-$host = getenv('DB_HOST') ?: 'mysql-64723e2-campusissuetracker.g.aivencloud.com';
-$port = getenv('DB_PORT') ?: '21975';
-$db   = getenv('DB_NAME') ?: 'defaultdb';
-$user = getenv('DB_USER') ?: 'avnadmin';
-$pass = getenv('DB_PASSWORD');
+$host = getenv('DB_HOST') ?: ($_ENV['DB_HOST'] ?? ($_SERVER['DB_HOST'] ?? 'mysql-64723e2-campusissuetracker.g.aivencloud.com'));
+$port = getenv('DB_PORT') ?: ($_ENV['DB_PORT'] ?? ($_SERVER['DB_PORT'] ?? '21975'));
+$db   = getenv('DB_NAME') ?: ($_ENV['DB_NAME'] ?? ($_SERVER['DB_NAME'] ?? 'defaultdb'));
+$user = getenv('DB_USER') ?: ($_ENV['DB_USER'] ?? ($_SERVER['DB_USER'] ?? 'avnadmin'));
+$pass = getenv('DB_PASSWORD') ?: ($_ENV['DB_PASSWORD'] ?? ($_SERVER['DB_PASSWORD'] ?? ''));
 
 if (!defined('DB_HOST')) define('DB_HOST', $host);
 if (!defined('DB_PORT')) define('DB_PORT', $port);
@@ -35,11 +35,10 @@ if (!defined('UPLOAD_DIR')) define('UPLOAD_DIR', __DIR__ . '/../uploads/issues/'
 if (!defined('UPLOAD_URL')) define('UPLOAD_URL', BASE_URL . 'uploads/issues/');
 if (!defined('MAX_FILE_SIZE')) define('MAX_FILE_SIZE', 5 * 1024 * 1024); // 5MB
 
-// Cloudinary Configuration & Helper
-if (!defined('CLOUDINARY_CLOUD_NAME'))   define('CLOUDINARY_CLOUD_NAME',   getenv('CLOUDINARY_CLOUD_NAME')   ?: 'djhubcw7');
-if (!defined('CLOUDINARY_API_KEY'))      define('CLOUDINARY_API_KEY',      getenv('CLOUDINARY_API_KEY')      ?: '267922663126137');
-if (!defined('CLOUDINARY_API_SECRET'))   define('CLOUDINARY_API_SECRET',   getenv('CLOUDINARY_API_SECRET')   ?: 'KdFVfve-8K6sKgiYnxTHqprT1zU');
-if (!defined('CLOUDINARY_UPLOAD_PRESET')) define('CLOUDINARY_UPLOAD_PRESET', getenv('CLOUDINARY_UPLOAD_PRESET') ?: 'fixmycampus_preset');
+if (!defined('CLOUDINARY_CLOUD_NAME'))   define('CLOUDINARY_CLOUD_NAME',   getenv('CLOUDINARY_CLOUD_NAME')   ?: ($_ENV['CLOUDINARY_CLOUD_NAME'] ?? ($_SERVER['CLOUDINARY_CLOUD_NAME'] ?? 'djhubcw7')));
+if (!defined('CLOUDINARY_API_KEY'))      define('CLOUDINARY_API_KEY',      getenv('CLOUDINARY_API_KEY')      ?: ($_ENV['CLOUDINARY_API_KEY'] ?? ($_SERVER['CLOUDINARY_API_KEY'] ?? '267922663126137')));
+if (!defined('CLOUDINARY_API_SECRET'))   define('CLOUDINARY_API_SECRET',   getenv('CLOUDINARY_API_SECRET')   ?: ($_ENV['CLOUDINARY_API_SECRET'] ?? ($_SERVER['CLOUDINARY_API_SECRET'] ?? 'KdFVfve-8K6sKgiYnxTHqprT1zU')));
+if (!defined('CLOUDINARY_UPLOAD_PRESET')) define('CLOUDINARY_UPLOAD_PRESET', getenv('CLOUDINARY_UPLOAD_PRESET') ?: ($_ENV['CLOUDINARY_UPLOAD_PRESET'] ?? ($_SERVER['CLOUDINARY_UPLOAD_PRESET'] ?? 'fixmycampus_preset')));
 
 /**
  * Upload image file to Cloudinary REST API with authentication
