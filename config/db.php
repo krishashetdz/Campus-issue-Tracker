@@ -18,7 +18,11 @@ if (!defined('DB_NAME')) define('DB_NAME', $db);
 // Dynamic BASE_URL detection for local XAMPP subfolder vs Render root deployment
 $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
 $appSubdir = (strpos($scriptDir, '/fixmycampus') !== false) ? '/fixmycampus/' : '/';
-$detectedBaseUrl = (isset($_SERVER['HTTP_HOST']) ? ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $appSubdir) : 'http://localhost/fixmycampus/');
+$isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+    || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+    || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
+$proto = $isHttps ? 'https' : 'http';
+$detectedBaseUrl = (isset($_SERVER['HTTP_HOST']) ? ($proto . '://' . $_SERVER['HTTP_HOST'] . $appSubdir) : 'http://localhost/fixmycampus/');
 
 if (!file_exists(__DIR__ . '/../uploads/')) {
     @mkdir(__DIR__ . '/../uploads/', 0777, true);
