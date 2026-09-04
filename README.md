@@ -169,6 +169,6 @@ flowchart LR
 
 ## ⚖️ License & Proprietary Notice
 
-**Copyright © 2026. All Rights Reserved.**
+**Copyright © 2026. All Rights Reserved.** 
 
 This platform and its codebase are **proprietary and confidential**. Unauthorized copying, modification, distribution, or commercial deployment of this software is strictly prohibited without explicit written permission from the project creators.
